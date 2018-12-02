@@ -1,4 +1,4 @@
-package com.dominion.entity;
+package com.dominion.nodemcu.entity;
 
 import java.util.Date;
 

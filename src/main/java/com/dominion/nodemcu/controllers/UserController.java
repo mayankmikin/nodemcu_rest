@@ -1,7 +1,6 @@
-package com.dominion.controllers;
+package com.dominion.nodemcu.controllers;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -10,15 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.dominion.entity.User;
-import com.dominion.model.ApiResponseMessage;
-import com.dominion.repository.UserRepository;
-import com.fasterxml.jackson.databind.JsonNode;
+import com.dominion.nodemcu.entity.User;
+import com.dominion.nodemcu.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @RestController
@@ -39,11 +34,12 @@ public class UserController
 		/*ApiResponseMessage response=new ApiResponseMessage(4,Thread.currentThread().getStackTrace()[1].getMethodName(), mapper.convertValue(allusers, JsonNode.class));*/
         return new ResponseEntity<List<User>>(allusers,HttpStatus.OK);
     }
-	@PostMapping("/save")
+	
+/*	@PostMapping("/save")
     public ResponseEntity<ApiResponseMessage> saveUser(@RequestBody User user){
 		user.setCreatedAt(Calendar.getInstance().getTime());
 		ApiResponseMessage response=new ApiResponseMessage(4,Thread.currentThread().getStackTrace()[1].getMethodName(), mapper.convertValue(repository.save(user), JsonNode.class));
         return new ResponseEntity<ApiResponseMessage>(response,HttpStatus.CREATED);
-    }
+    }*/
 
 }

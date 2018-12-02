@@ -1,4 +1,4 @@
-package com.dominion.model;
+package com.dominion.nodemcu.model;
 
 import javax.xml.bind.annotation.XmlTransient;
 
