@@ -1,6 +1,7 @@
 package com.dominion.nodemcu.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
@@ -14,5 +15,7 @@ public interface UserRepository extends CrudRepository<User, Long> {
 
 		List<User> findByFirstnameAndIsactive(String firstname, Boolean isactive);
 		List<User> findByLastname(String lastName);
-	
+		Optional<User> findById(Long id);
+		Optional<User> findByAccount(Long id);
+		
 }

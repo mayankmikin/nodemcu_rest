@@ -55,6 +55,10 @@ public class Device implements Serializable {
 	private Account account;
 
 	private String userDefinedName;
+	
+	private String localIp;
+	
+	private String externalIp;
 
 	public Long getId() {
 		return id;
@@ -127,9 +131,28 @@ public class Device implements Serializable {
 	public void setUserDefinedName(String userDefinedName) {
 		this.userDefinedName = userDefinedName;
 	}
+	public Device() {
+		super();
+	}
+
+	public String getLocalIp() {
+		return localIp;
+	}
+
+	public void setLocalIp(String localIp) {
+		this.localIp = localIp;
+	}
+
+	public String getExternalIp() {
+		return externalIp;
+	}
+
+	public void setExternalIp(String externalIp) {
+		this.externalIp = externalIp;
+	}
 
 	public Device(Long id, String name, String exporterId, String manufacturerId, String serialId, Date createdAt,
-			Date updatedAt, Account account, String userDefinedName) {
+			Date updatedAt, Account account, String userDefinedName, String localIp, String externalIp) {
 		super();
 		this.id = id;
 		this.name = name;
@@ -140,12 +163,8 @@ public class Device implements Serializable {
 		this.updatedAt = updatedAt;
 		this.account = account;
 		this.userDefinedName = userDefinedName;
+		this.localIp = localIp;
+		this.externalIp = externalIp;
 	}
-
-	public Device() {
-		super();
-	}
-	
-
 	
 }
