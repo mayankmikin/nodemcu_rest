@@ -1,12 +1,12 @@
-package com.dominion.nodemcu;
+package com.dominion.test;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class NodemcuApplication {
+public class TestApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(NodemcuApplication.class, args);
+		SpringApplication.run(TestApplication.class, args);
 	}
 }
