@@ -21,10 +21,10 @@ public class Account implements Serializable{
 	private Long id;
 	
 	@OneToMany(mappedBy="account", fetch=FetchType.LAZY)
-	private Set<User> users;
+	private Set<User> users=new HashSet<>();;
 	
 	@OneToMany(mappedBy="account", fetch=FetchType.LAZY)
-	private Set<Device> devices;
+	private Set<Device> devices=new HashSet<>();;
 	
 	public Long getId() {
 		return id;
@@ -46,8 +46,17 @@ public class Account implements Serializable{
 		return devices;
 	}
 
-	public void setDevices(Set<Device> devices) {
-		this.devices = devices;
+	public void setDevices(Device devices) {
+		this.devices = new HashSet<>();
+		this.devices.add(devices);
+	}
+	public void addUsers(User users) {
+		this.users =  new HashSet<>(); ;
+		this.users.add(users);
+	}
+
+	public Set<Device> addDevices() {
+		return devices;
 	}
 
 	public Account(Long id, Set<User> users, Set<Device> devices) {
@@ -60,6 +69,7 @@ public class Account implements Serializable{
 	public Account() {
 		super();
 	}
+
 	
 	
 
