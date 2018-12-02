@@ -6,9 +6,9 @@ import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurerAdapter;
 import org.springframework.stereotype.Component;
 
+import com.dominion.nodemcu.entity.Account;
+import com.dominion.nodemcu.entity.Device;
 import com.dominion.nodemcu.entity.User;
-import com.dominion.nodemcu.model.Account;
-import com.dominion.nodemcu.model.Device;
 
 @SpringBootApplication
 public class TestApplication {

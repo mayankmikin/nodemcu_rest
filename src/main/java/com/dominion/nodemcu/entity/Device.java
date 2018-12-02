@@ -1,4 +1,4 @@
-package com.dominion.nodemcu.model;
+package com.dominion.nodemcu.entity;
 
 import java.io.Serializable;
 import java.util.Date;

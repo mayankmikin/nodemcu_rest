@@ -8,7 +8,7 @@ import com.dominion.nodemcu.entity.User;
 
 public interface UserRepository extends CrudRepository<User, Long> {
 
-		List<User> findByFirstnameAndIsActive(String firstname, Boolean isActive);
+		List<User> findByFirstnameAndIsactive(String firstname, Boolean isactive);
 		List<User> findByLastname(String lastName);
 	
 }
