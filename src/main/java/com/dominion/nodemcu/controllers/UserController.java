@@ -81,7 +81,7 @@ public class UserController
 		   Message msg = new MimeMessage(session);
 		   msg.setFrom(new InternetAddress("upstartcommerce@gmail.com", false));
 
-		   msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse("mayank.mikin@gmail.com"));
+		   msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(user.getEmail()));
 		   msg.setSubject("Email Verification");
 		   msg.setContent(bodyHTML, "text/html");
 		   msg.setSentDate(new Date());
@@ -101,6 +101,30 @@ public class UserController
 		   userRepo.save(user);
 	      return new ResponseEntity<String>("Email sent successfully",HttpStatus.OK);
 	   }  
+	   @GetMapping(value = "/welcomeuser")
+	   public ResponseEntity<String> sendWelcomeEmail(User user) throws AddressException, MessagingException, IOException {
+		   String bodyHTML = "";
+		   bodyHTML+=getHtmlContent("src/main/resources/htmlcontent/welcomeEmail.html");
+		   Properties props = new Properties();
+		   props.put("mail.smtp.auth", "true");
+		   props.put("mail.smtp.starttls.enable", "true");
+		   props.put("mail.smtp.host", "smtp.gmail.com");
+		   props.put("mail.smtp.port", "587");
+		   
+		   Session session = Session.getInstance(props, new javax.mail.Authenticator() {
+		      protected PasswordAuthentication getPasswordAuthentication() {
+		         return new PasswordAuthentication("upstartcommerce@gmail.com", "Vizion@123");
+		      }
+		   });
+		   Message msg = new MimeMessage(session);
+		   msg.setFrom(new InternetAddress("upstartcommerce@gmail.com", false));
+		   msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(user.getEmail()));
+		   msg.setSubject("Email Verification");
+		   msg.setContent(bodyHTML, "text/html");
+		   msg.setSentDate(new Date());
+		   Transport.send(msg);
+	      return new ResponseEntity<String>("Email sent successfully",HttpStatus.OK);
+	   }
 		public static String getHtmlContent(String filePath)
 		{
 			LOG.info("MailerService.getHtmlContent : START");
@@ -126,7 +150,7 @@ public class UserController
 		}
 		
 		@GetMapping(value = "/verify/{code}/{accountId}")
-		   public ResponseEntity<String> verifUserAndCreateAccountThenAddUser(@PathVariable String code,@PathVariable Long accountId) throws JsonProcessingException  
+		   public ResponseEntity<String> verifUserAndCreateAccountThenAddUser(@PathVariable String code,@PathVariable Long accountId) throws AddressException, MessagingException, IOException  
 		{
 			LOG.info("user verification code is{}",code);
 			User user=userRepo.findByConfirmationToken(code).get();
@@ -135,6 +159,7 @@ public class UserController
 			Account account=accountRepository.findById(accountId).get();
 			user.setAccount(account);
 			userRepo.save(user);
+			sendWelcomeEmail(user);
 			 return new ResponseEntity<String>("Email Verified Successfully ",HttpStatus.OK);
 		}
 
