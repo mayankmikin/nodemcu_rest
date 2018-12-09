@@ -2,6 +2,7 @@ package com.dominion.nodemcu.entity;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,6 +11,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -21,16 +24,20 @@ import javax.validation.constraints.NotNull;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+
 @Entity
 @Table(name = "user")
-public class User implements Serializable{
+public class User implements Serializable {
 
 	private static final long serialVersionUID = 8200959090022234026L;
-	  
-/*	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(updatable=false, unique=true, nullable=false)
-	private Long id;*/
+
+	/*
+	 * @Id
+	 * 
+	 * @GeneratedValue(strategy = GenerationType.IDENTITY)
+	 * 
+	 * @Column(updatable=false, unique=true, nullable=false) private Long id;
+	 */
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "ID")
@@ -43,12 +50,12 @@ public class User implements Serializable{
 	private String address;
 
 	private Boolean isactive;
-	
+
 	@NotNull
 	private String phone;
 
-	@ManyToOne(fetch=FetchType.EAGER)
-	@JoinColumn(name="ACCOUNT_ID")
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "ACCOUNT_ID")
 	private Account account;
 
 	@Column(nullable = true, updatable = false)
@@ -65,15 +72,25 @@ public class User implements Serializable{
 	@Email(message = "Please provide a valid e-mail")
 	@NotEmpty(message = "Please provide an e-mail")
 	private String email;
-	
+
 	@Transient
 	private String password;
-	
+
 	private boolean enabled;
-	
+
 	private String confirmationToken;
-	
+
 	private Boolean isAccountOwner;
+
+	/**
+	 * Roles are being eagerly loaded here because they are a fairly small
+	 * collection of items for this example.
+	 */
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
+	private List<Role> roles;
+
+	// getter setters and constructors
 
 	public Long getId() {
 		return id;
@@ -106,8 +123,6 @@ public class User implements Serializable{
 	public void setAddress(String address) {
 		this.address = address;
 	}
-
-
 
 	public Boolean getIsactive() {
 		return isactive;
@@ -181,7 +196,6 @@ public class User implements Serializable{
 		this.confirmationToken = confirmationToken;
 	}
 
-
 	public User() {
 		super();
 	}
@@ -194,10 +208,18 @@ public class User implements Serializable{
 		this.isAccountOwner = isAccountOwner;
 	}
 
+	public List<Role> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(List<Role> roles) {
+		this.roles = roles;
+	}
+
 	public User(Long id, String firstname, String lastname, String address, Boolean isactive, @NotNull String phone,
 			Account account, Date createdAt, Date updatedAt,
 			@Email(message = "Please provide a valid e-mail") @NotEmpty(message = "Please provide an e-mail") String email,
-			String password, boolean enabled, String confirmationToken, Boolean isAccountOwner) {
+			String password, boolean enabled, String confirmationToken, Boolean isAccountOwner, List<Role> roles) {
 		super();
 		this.id = id;
 		this.firstname = firstname;
@@ -213,10 +235,7 @@ public class User implements Serializable{
 		this.enabled = enabled;
 		this.confirmationToken = confirmationToken;
 		this.isAccountOwner = isAccountOwner;
+		this.roles = roles;
 	}
 
-
-	
-	
-	
 }

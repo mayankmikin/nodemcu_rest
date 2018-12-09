@@ -68,3 +68,21 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 	              .authenticationManager(authenticationManager);
 	   }
 }
+
+/*· @EnableAuthorizationServer: Enables an authorization server
+
+· AuthorizationServerConfig which is our authorization server configuration class extends AuthorizationServerConfigurerAdapter which in turn is an implementation of AuthorizationServerConfigurer. The presence of a bean of type AuthorizationServerConfigurer simply tells Spring Boot to switch off auto-configuration and use the custom configuration. Also the AuthorizationServerConfig like any other configuration class has its definition automatically scanned,wired and applied by Spring Boot because of the @Configuration annotation.
+
+· Client id: defines the id of the client application that is authorized to authenticate, the client application provides this in order to be allowed to send request to the server.
+
+Client secret: is the client application’s password. In a non-trivial implementation client ids and passwords will be securely stored in a database and retrievable through a separate API that clients applications access during deployment. These pieces of information can also be shared and stored in environment variables although that would not be my preferred option.
+
+· Grant type: we define grant type password here because it’s not enabled by default
+
+· The scope: read, write defines the level of access we are allowing to resources
+
+· Resource Id: The resource Id specified here must be specified on the resource server as well
+
+· AuthenticationManager: Spring’s authentication manager takes care checking user credential validity
+
+· TokenEnhancerChain: We define a token enhancer that enables chaining multiple types of claims containing different information*/

@@ -20,6 +20,7 @@ public interface UserRepository extends CrudRepository<User, Long> {
 		List<User> findByLastname(String lastName);
 		Optional<User> findById(Long id);
 		Optional<User> findByAccount(Long id);
+		Optional<User> findByEmail(String email);
 		/*@Query("SELECT d FROM Device d WHERE d.serialId=:serialid")
 		Optional<Device> findByConfirmationToken(@Param("serialid") String serialid);*/
 		Optional<User> findByConfirmationToken(String confirmationToken);
