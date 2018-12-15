@@ -15,10 +15,8 @@ public class Role {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name="role_name")
     private String roleName;
 
-    @Column(name="description")
     private String description;
 
 
@@ -45,4 +43,16 @@ public class Role {
     public void setDescription(String description) {
         this.description = description;
     }
+
+	public Role() {
+		super();
+	}
+
+	public Role(Long id, String roleName, String description) {
+		super();
+		this.id = id;
+		this.roleName = roleName;
+		this.description = description;
+	}
+    
 }

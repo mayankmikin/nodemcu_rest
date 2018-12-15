@@ -1,13 +1,16 @@
 package com.dominion.nodemcu;
 
+import org.h2.tools.Server;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurerAdapter;
 import org.springframework.stereotype.Component;
 
 import com.dominion.nodemcu.entity.Account;
 import com.dominion.nodemcu.entity.Device;
+import com.dominion.nodemcu.entity.Role;
 import com.dominion.nodemcu.entity.User;
 
 @SpringBootApplication
@@ -27,7 +30,20 @@ public class TestApplication {
 	    config.exposeIdsFor(Account.class);
 	    config.exposeIdsFor(Device.class);
 	    config.exposeIdsFor(User.class);
+	    config.exposeIdsFor(Role.class);
 	  }
+	}
+	@Bean
+	org.h2.tools.Server h2Server() {
+	    Server server = new Server();
+	    try {
+	        server.runTool("-tcp");
+	        server.runTool("-tcpAllowOthers");
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    return server;
+
 	}
 	
 }

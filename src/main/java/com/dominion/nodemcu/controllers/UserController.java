@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dominion.nodemcu.entity.Account;
+import com.dominion.nodemcu.entity.Device;
 import com.dominion.nodemcu.entity.User;
 import com.dominion.nodemcu.model.DeviceRequest;
 import com.dominion.nodemcu.repository.AccountRepository;
@@ -58,7 +59,7 @@ public class UserController
 	   public ResponseEntity<String> sendEmail(User user,Account account) throws AddressException, MessagingException, IOException {
 		   UUID token= UUID.randomUUID();
 		   String bodyHTML = "";
-		   String linkPath="http://192.168.0.7:9000/api/user/verify";
+		   String linkPath="http://192.168.0.6:9000/api/user/verify";
 		   bodyHTML+=getHtmlContent("src/main/resources/htmlcontent/confirmationEmail.html");
 			String linkContent = "<a href=\"" + linkPath + ""
 					+ "/" + token.toString()+ "/"+account.getId() + "\" "
@@ -157,6 +158,7 @@ public class UserController
 			LOG.info("user found with these details");
 			LOG.info(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(user));
 			Account account=accountRepository.findById(accountId).get();
+			// set this account into user means path from user to account is created
 			user.setAccount(account);
 			userRepo.save(user);
 			sendWelcomeEmail(user);
@@ -166,7 +168,10 @@ public class UserController
 		 @PostMapping("/register")
 			public ResponseEntity<User> register(@RequestBody User user) throws AddressException, MessagingException, IOException
 			{
-			 	
+			 	// first create a user 
+			 	// then add that user into the account means path from account to user is created
+			    // now hold on we need to set account into user as well 
+			 	// which will be done when a user's email is verified
 			 	 user.setEnabled(true);
 			 	 user=userRepo.save(user);
 			 	 Account account=new Account();
@@ -179,4 +184,5 @@ public class UserController
 					 LOG.info(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(account));
 				 return new ResponseEntity<User>(user,HttpStatus.OK);
 			}
+	      
 }

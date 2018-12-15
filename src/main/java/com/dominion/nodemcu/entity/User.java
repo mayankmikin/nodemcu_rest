@@ -25,6 +25,8 @@ import javax.validation.constraints.NotNull;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 @Entity
 @Table(name = "user")
 public class User implements Serializable {
@@ -53,7 +55,8 @@ public class User implements Serializable {
 
 	@NotNull
 	private String phone;
-
+	
+	@JsonBackReference
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "ACCOUNT_ID")
 	private Account account;
@@ -86,6 +89,7 @@ public class User implements Serializable {
 	 * Roles are being eagerly loaded here because they are a fairly small
 	 * collection of items for this example.
 	 */
+	
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
 	private List<Role> roles;

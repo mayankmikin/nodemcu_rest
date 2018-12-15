@@ -1,5 +1,7 @@
 package com.dominion.nodemcu.config;
 
+import java.util.Arrays;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,12 +11,14 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
+import org.springframework.security.web.header.writers.frameoptions.WhiteListedAllowFromStrategy;
+import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter;
+import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter.XFrameOptionsMode;
 
 
 @Configuration
@@ -44,14 +48,26 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http
-		        .sessionManagement()
+		        /*.sessionManagement()
 		        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 		        .and()
 		        .httpBasic()
 		        .realmName(securityRealm)
-		        .and()
+		        .and()*/
 		        .csrf()
-		        .disable();
+		        .disable()
+		        
+		        // now below configuration allows us to see h2 console
+				.authorizeRequests().antMatchers("/","/h2/**").permitAll().and()
+				.formLogin().loginPage("/login").permitAll()
+				.and()
+				.logout().permitAll();
+		http.exceptionHandling().accessDeniedPage("/403");
+		
+		http.headers().frameOptions().disable();
+		/*http.headers().addHeaderWriter(
+	            new XFrameOptionsHeaderWriter(
+	            		XFrameOptionsMode.SAMEORIGIN));*/
 
 	}
 
@@ -76,3 +92,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		return defaultTokenServices;
 	}
 }
+
+
+/*
+To enable access to the H2 database console under Spring Security you need to change three things:
+
+Allow all access to the url path /console.
+Disable CRSF (Cross-Site Request Forgery). By default, Spring Security will protect against CRSF attacks.
+Since the H2 database console runs inside a frame, you need to enable this in in Spring Security.
+The following Spring Security Configuration will:
+
+Allow all requests to the root url (“/”) (Line 12)
+Allow all requests to the H2 database console url (“/console/*”) (Line 13)
+Disable CSRF protection (Line 15)
+Disable X-Frame-Options in Spring Security (Line 16)
+CAUTION: This is not a Spring Security Configuration that you would want to use for a production website.
+ These settings are only to support development of a Spring Boot web application and enable access to the 
+ H2 database console. I cannot think of an example where you’d actually want the H2 database console exposed 
+ on a production database.
+*/

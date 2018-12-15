@@ -17,12 +17,16 @@ import javax.persistence.TemporalType;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 /**
  * @author Mayank Verma
  *
  */
 @Entity
 @Table(name = "device")
+@JsonIgnoreProperties 
 public class Device implements Serializable {
 	
 	 private static final long serialVersionUID = 820095909012312326L;
@@ -50,8 +54,9 @@ public class Device implements Serializable {
 	@LastModifiedDate
 	private Date updatedAt;
 	
-	@ManyToOne(fetch=FetchType.EAGER)
+	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name="ACCOUNT_ID")
+	@JsonBackReference
 	private Account account;
 
 	private String userDefinedName;
@@ -166,5 +171,14 @@ public class Device implements Serializable {
 		this.localIp = localIp;
 		this.externalIp = externalIp;
 	}
+
+	@Override
+	public String toString() {
+		return "Device [id=" + id + ", name=" + name + ", exporterId=" + exporterId + ", manufacturerId="
+				+ manufacturerId + ", serialId=" + serialId + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt
+				+ ", account=" + account + ", userDefinedName=" + userDefinedName + ", localIp=" + localIp
+				+ ", externalIp=" + externalIp + "]";
+	}
+	
 	
 }
