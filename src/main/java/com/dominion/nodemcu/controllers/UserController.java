@@ -2,8 +2,9 @@ package com.dominion.nodemcu.controllers;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Properties;
 import java.util.UUID;
 
@@ -15,31 +16,30 @@ import javax.mail.Transport;
 import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.dominion.nodemcu.entity.Account;
-import com.dominion.nodemcu.entity.Device;
+import com.dominion.nodemcu.entity.Role;
 import com.dominion.nodemcu.entity.User;
-import com.dominion.nodemcu.model.DeviceRequest;
+import com.dominion.nodemcu.model.Login;
+import com.dominion.nodemcu.model.UserModel;
 import com.dominion.nodemcu.repository.AccountRepository;
+import com.dominion.nodemcu.repository.RoleRepository;
 import com.dominion.nodemcu.repository.UserRepository;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 @RestController
 @RequestMapping("/api/user")
@@ -50,6 +50,9 @@ public class UserController
 	UserRepository userRepo;
 	@Autowired
 	AccountRepository accountRepository;
+	@Autowired
+	RoleRepository roleRepo;
+	
 	 public static ObjectMapper mapper = new ObjectMapper();
 	public static final String MAIL_BUTTON_STYLE = "\"color: #ffffff; text-align:center;text-decoration: none; text-transform: uppercase;\" target=\"_blank\" class=\"mobile-button\"";
 	
@@ -166,14 +169,27 @@ public class UserController
 		}
 
 		 @PostMapping("/register")
-			public ResponseEntity<User> register(@RequestBody User user) throws AddressException, MessagingException, IOException
+			public ResponseEntity<User> register(@RequestBody UserModel userModel) throws AddressException, MessagingException, IOException
 			{
 			 	// first create a user 
 			 	// then add that user into the account means path from account to user is created
 			    // now hold on we need to set account into user as well 
 			 	// which will be done when a user's email is verified
+			 List<Role>roles=new ArrayList<Role>();
+			 if(roles.isEmpty())
+			 {
+				 roles.add(roleRepo.findByRoleName("STANDARD_USER").get());
+			 }
+			 else
+			 {
+				 userModel.getRoles().forEach(e->{
+					 roles.add(roleRepo.findById(e).get());
+				 });
+			 }
+			 
+			 User user=new User(userModel.getFirstname(), userModel.getLastname(), userModel.getAddress(), userModel.getIsactive(), userModel.getPhone(), userModel.getAccount(), userModel.getCreatedAt(), userModel.getUpdatedAt(), userModel.getEmail(), userModel.getPassword(), userModel.isEnabled(), userModel.getConfirmationToken(), userModel.getIsAccountOwner(), roles);
 			 	 user.setEnabled(true);
-			 	 user=userRepo.save(user);
+			 	user=userRepo.save(user);
 			 	 Account account=new Account();
 			 	 account.addUsers(user);
 			 	 account=accountRepository.save(account);
@@ -184,5 +200,22 @@ public class UserController
 					 LOG.info(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(account));
 				 return new ResponseEntity<User>(user,HttpStatus.OK);
 			}
+		 
+		/* @PostMapping("/user/login")
+		 public ResponseEntity<String> authenticate(@RequestBody Login login)
+		 {
+			 
+			 
+			 
+		 }*/
+		 
+		/*@GetMapping(value = "/test/authentication")
+		 @PreAuthorize("hasAuthority('ADMIN_USER')")
+		public ResponseEntity<String> showrole()
+		{
+			LOG.info("showrole");
+			
+			 return new ResponseEntity<String>("Role is"+,HttpStatus.OK);
+		}*/
 	      
 }

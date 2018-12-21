@@ -58,7 +58,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		        .disable()
 		        
 		        // now below configuration allows us to see h2 console
-				.authorizeRequests().antMatchers("/","/h2/**").permitAll().and()
+				.authorizeRequests().antMatchers("/","/h2/**","/oauth/*").permitAll().and()
 				.formLogin().loginPage("/login").permitAll()
 				.and()
 				.logout().permitAll();
@@ -93,6 +93,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 }
 
+/*
+· @EnableWebSecurity : Enables spring security and hints Spring Boot to apply all the sensitive defaults
+
+· @EnableGlobalMethodSecurity: Allows us to have method level access control
+
+· JwtTokenStore and JwtAccessTokenConverter beans: A JwtTokenStore bean is needed by the authorization server and to enable the resource server to decode access tokens an JwtAccessTokenConverter bean must be used by both servers. In this case, we are providing a symmetric key signing.
+
+· UserDetailsService: We inject a custom implementation of UserDetailsService, named AppUserDetailsService (see code in Github for details) in order to retrieve user details from the database.
+
+· Encoding: SHA-256 is used to encode passwords. This is set in encodingStrength property
+
+· Realm: The security realm name is defined in securityRealm property. This name is arbitrary. A realm is basically all that define our security solution from provider, to roles, to users, etc.
+*/
 
 /*
 To enable access to the H2 database console under Spring Security you need to change three things:

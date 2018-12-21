@@ -17,12 +17,12 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 @Entity
 @Table(name = "account")
-@JsonIgnoreProperties
+//@JsonIgnoreProperties
 public class Account implements Serializable{
 
 	private static final long serialVersionUID = 8200390022234026L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.TABLE)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	/*Note:
 	 * 

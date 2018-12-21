@@ -1,49 +1,17 @@
-package com.dominion.nodemcu.entity;
+package com.dominion.nodemcu.model;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import com.dominion.nodemcu.entity.Account;
 
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
+public class UserModel implements Serializable {
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+	private static final long serialVersionUID = 8200912390022234026L;
 
-@Entity
-@Table(name = "user")
-public class User implements Serializable {
 
-	private static final long serialVersionUID = 8200959090022234026L;
 
-	/*
-	 * @Id
-	 * 
-	 * @GeneratedValue(strategy = GenerationType.IDENTITY)
-	 * 
-	 * @Column(updatable=false, unique=true, nullable=false) private Long id;
-	 */
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "ID")
 	private Long id;
 
 	private String firstname;
@@ -54,30 +22,21 @@ public class User implements Serializable {
 
 	private Boolean isactive;
 
-	@NotNull
 	private String phone;
 	
-	@JsonBackReference
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "ACCOUNT_ID")
+
 	private Account account;
 
-	@Column(nullable = true, updatable = false)
-	@Temporal(TemporalType.TIMESTAMP)
-	@CreatedDate
+
 	private Date createdAt;
 
-	@Column(nullable = true)
-	@Temporal(TemporalType.TIMESTAMP)
-	@LastModifiedDate
+
 	private Date updatedAt;
 
-	@Column(nullable = false, unique = true)
-	@Email(message = "Please provide a valid e-mail")
-	@NotEmpty(message = "Please provide an e-mail")
+
 	private String email;
 
-	@Transient
+
 	private String password;
 
 	private boolean enabled;
@@ -91,9 +50,7 @@ public class User implements Serializable {
 	 * collection of items for this example.
 	 */
 	
-	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
-	private List<Role> roles;
+	private List<Long> roles;
 
 	// getter setters and constructors
 
@@ -201,9 +158,7 @@ public class User implements Serializable {
 		this.confirmationToken = confirmationToken;
 	}
 
-	public User() {
-		super();
-	}
+	
 
 	public Boolean getIsAccountOwner() {
 		return isAccountOwner;
@@ -213,25 +168,19 @@ public class User implements Serializable {
 		this.isAccountOwner = isAccountOwner;
 	}
 
-	public List<Role> getRoles() {
+	public List<Long> getRoles() {
 		return roles;
 	}
 
-	public void setRoles(List<Role> roles) {
+	public void setRoles(List<Long> roles) {
 		this.roles = roles;
 	}
-	public void addRoleToExistingRoles(Role role) {
-		this.roles.add(role);
-	}
-	public void addRoleToNewRolesList(Role role) {
-		this.roles=new ArrayList<>();
-		this.roles.add(role);
-	}
-	public User( String firstname, String lastname, String address, Boolean isactive, @NotNull String phone,
-			Account account, Date createdAt, Date updatedAt,
-			@Email(message = "Please provide a valid e-mail") @NotEmpty(message = "Please provide an e-mail") String email,
-			String password, boolean enabled, String confirmationToken, Boolean isAccountOwner, List<Role> roles) {
+
+	public UserModel(Long id, String firstname, String lastname, String address, Boolean isactive, String phone,
+			Account account, Date createdAt, Date updatedAt, String email, String password, boolean enabled,
+			String confirmationToken, Boolean isAccountOwner, List<Long> roles) {
 		super();
+		this.id = id;
 		this.firstname = firstname;
 		this.lastname = lastname;
 		this.address = address;
@@ -247,5 +196,12 @@ public class User implements Serializable {
 		this.isAccountOwner = isAccountOwner;
 		this.roles = roles;
 	}
+
+	public UserModel() {
+		super();
+	}
+
+
+
 
 }

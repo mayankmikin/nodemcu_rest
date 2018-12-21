@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  */
 @Entity
 @Table(name = "device")
-@JsonIgnoreProperties 
+//@JsonIgnoreProperties 
 public class Device implements Serializable {
 	
 	 private static final long serialVersionUID = 820095909012312326L;
