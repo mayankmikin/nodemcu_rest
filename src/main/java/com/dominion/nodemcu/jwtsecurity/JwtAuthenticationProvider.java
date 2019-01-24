@@ -1,6 +1,7 @@
 package com.dominion.nodemcu.jwtsecurity;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -37,9 +38,17 @@ public class JwtAuthenticationProvider extends AbstractUserDetailsAuthentication
         if (jwtUser == null) {
             throw new RuntimeException("JWT Token is incorrect");
         }
+        String role="";
+        jwtUser.getRole()
+		.stream()
+		.map(e->role+e.getRoleName()+",")
+		.collect(Collectors.toList());
+        /*To remove the ", " part which is immediately followed by end of string, you can do:
 
+        	str = str.replaceAll(", $", "");*/
+        role.replaceAll(", $", "");
         List<GrantedAuthority> grantedAuthorities = AuthorityUtils
-                .commaSeparatedStringToAuthorityList(jwtUser.getRole());
+                .commaSeparatedStringToAuthorityList(role);
         return new JwtUserDetails(jwtUser.getUserName(), jwtUser.getId(),
                 token,
                 grantedAuthorities);

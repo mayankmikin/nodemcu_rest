@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.UUID;
 
@@ -21,6 +22,7 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -32,14 +34,21 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.dominion.nodemcu.constants.Constants;
 import com.dominion.nodemcu.entity.Account;
+import com.dominion.nodemcu.entity.ApiResponseMessage;
 import com.dominion.nodemcu.entity.Role;
 import com.dominion.nodemcu.entity.User;
+import com.dominion.nodemcu.exceptions.Details;
+import com.dominion.nodemcu.exceptions.UserNotFoundException;
+import com.dominion.nodemcu.jwtsecurity.JwtGenerator;
+import com.dominion.nodemcu.model.JwtUser;
 import com.dominion.nodemcu.model.Login;
 import com.dominion.nodemcu.model.UserModel;
 import com.dominion.nodemcu.repository.AccountRepository;
 import com.dominion.nodemcu.repository.RoleRepository;
 import com.dominion.nodemcu.repository.UserRepository;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 @RestController
 @RequestMapping("/api/user")
@@ -52,7 +61,14 @@ public class UserController
 	AccountRepository accountRepository;
 	@Autowired
 	RoleRepository roleRepo;
-	
+	@Value("${server.endpoint}")
+	private String serverPath;
+	 private JwtGenerator jwtGenerator;
+
+	    public UserController(JwtGenerator jwtGenerator) {
+	        this.jwtGenerator = jwtGenerator;
+	    }
+
 	 public static ObjectMapper mapper = new ObjectMapper();
 	public static final String MAIL_BUTTON_STYLE = "\"color: #ffffff; text-align:center;text-decoration: none; text-transform: uppercase;\" target=\"_blank\" class=\"mobile-button\"";
 	
@@ -62,7 +78,7 @@ public class UserController
 	   public ResponseEntity<String> sendEmail(User user,Account account) throws AddressException, MessagingException, IOException {
 		   UUID token= UUID.randomUUID();
 		   String bodyHTML = "";
-		   String linkPath="http://192.168.0.6:9000/api/user/verify";
+		   String linkPath=serverPath+"/api/user/verify";
 		   bodyHTML+=getHtmlContent("src/main/resources/htmlcontent/confirmationEmail.html");
 			String linkContent = "<a href=\"" + linkPath + ""
 					+ "/" + token.toString()+ "/"+account.getId() + "\" "
@@ -201,21 +217,53 @@ public class UserController
 				 return new ResponseEntity<User>(user,HttpStatus.OK);
 			}
 		 
-		/* @PostMapping("/user/login")
-		 public ResponseEntity<String> authenticate(@RequestBody Login login)
+		 @PostMapping("/user/login")
+		 public ResponseEntity<?> authenticate(@RequestBody Login login)
 		 {
 			 
-			 
-			 
-		 }*/
+			Optional<User> u= userRepo.findByEmail(login.getUsername());
+			if(u.isPresent())
+			{
+				User user=u.get(); 
+				return authenticate(new JwtUser(user.getEmail(),user.getId(),user.getRoles()));
+			}
+			else
+			{
+				try 
+				{
+					UserNotFoundException ex= new UserNotFoundException(Constants.UserConstants.USER_NOT_FOUND,Constants.PublicConstants.reason,Constants.PublicConstants.status,Constants.createDetailsForException("email or username", Constants.UserConstants.USER_NOT_FOUND));
+					throw ex;
+				}
+				catch (UserNotFoundException e)
+				{
+					LOG.error("User not found");
+					return new ResponseEntity<ApiResponseMessage>(new ApiResponseMessage(1, e.getMessage(), mapper.convertValue(e.toString(), JsonNode.class)),HttpStatus.BAD_REQUEST);
+				}
+				catch (Exception e) 
+				{
+					LOG.error("Unknown Exception");
+					return new ResponseEntity<ApiResponseMessage>(new ApiResponseMessage(1, e.getMessage(), mapper.convertValue(e.getMessage(), JsonNode.class)),HttpStatus.BAD_REQUEST);
+				}
+			}
+		 }
 		 
-		/*@GetMapping(value = "/test/authentication")
-		 @PreAuthorize("hasAuthority('ADMIN_USER')")
+		 @PostMapping("/outh/token")
+		 public ResponseEntity<String> authenticate(@RequestBody JwtUser jwtUser)
+		 {
+			 
+			 return new ResponseEntity<String>(jwtGenerator.generate(jwtUser),HttpStatus.OK);
+			 
+		 }			
+		 
+		@GetMapping(value = "/rest/authentication")
+		 //@PreAuthorize("hasAuthority('ADMIN_USER')")
+		 @PreAuthorize("hasAnyRole('STANDARD_USER', 'ADMIN_USER')")
+		//@PreAuthorize("hasRole('STANDARD_USER')")
 		public ResponseEntity<String> showrole()
 		{
-			LOG.info("showrole");
-			
-			 return new ResponseEntity<String>("Role is"+,HttpStatus.OK);
-		}*/
+			 LOG.info("showrole");
+			 
+			 return new ResponseEntity<String>("Role is",HttpStatus.OK);
+		}
 	      
 }

@@ -1,7 +1,10 @@
 package com.dominion.nodemcu.jwtsecurity;
 
+import java.util.List;
+
 import org.springframework.stereotype.Component;
 
+import com.dominion.nodemcu.entity.Role;
 import com.dominion.nodemcu.model.JwtUser;
 
 import io.jsonwebtoken.Claims;
@@ -26,7 +29,7 @@ public class JwtValidator {
 
             jwtUser.setUserName(body.getSubject());
             jwtUser.setId(Long.parseLong((String) body.get("userId")));
-            jwtUser.setRole((String) body.get("role"));
+            jwtUser.setRole((List<Role>) body.get("role"));
         }
         catch (Exception e) {
             System.out.println(e);
