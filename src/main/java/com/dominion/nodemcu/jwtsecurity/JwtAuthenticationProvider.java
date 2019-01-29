@@ -3,6 +3,8 @@ package com.dominion.nodemcu.jwtsecurity;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
@@ -16,9 +18,11 @@ import com.dominion.nodemcu.model.JwtAuthenticationToken;
 import com.dominion.nodemcu.model.JwtUser;
 import com.dominion.nodemcu.model.JwtUserDetails;
 
+import io.jsonwebtoken.ExpiredJwtException;
+
 @Component
 public class JwtAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
-
+	private static final Logger LOG = LoggerFactory.getLogger(JwtAuthenticationProvider.class);
     @Autowired
     private JwtValidator validator;
 
@@ -29,11 +33,12 @@ public class JwtAuthenticationProvider extends AbstractUserDetailsAuthentication
 
     @Override
     protected UserDetails retrieveUser(String username, UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken) throws AuthenticationException {
-
+    	 JwtUser jwtUser=new JwtUser();
+    	try {
         JwtAuthenticationToken jwtAuthenticationToken = (JwtAuthenticationToken) usernamePasswordAuthenticationToken;
         String token = jwtAuthenticationToken.getToken();
-
-        JwtUser jwtUser = validator.validate(token);
+        
+        jwtUser= validator.validate(token);
 
         if (jwtUser == null) {
             throw new RuntimeException("JWT Token is incorrect");
@@ -41,8 +46,7 @@ public class JwtAuthenticationProvider extends AbstractUserDetailsAuthentication
         String role="";
         jwtUser.getRole()
 		.stream()
-		.map(e->role+e.getRoleName()+",")
-		.collect(Collectors.toList());
+		.map(e->role+e.getRoleName()+",");
         /*To remove the ", " part which is immediately followed by end of string, you can do:
 
         	str = str.replaceAll(", $", "");*/
@@ -52,6 +56,20 @@ public class JwtAuthenticationProvider extends AbstractUserDetailsAuthentication
         return new JwtUserDetails(jwtUser.getUserName(), jwtUser.getId(),
                 token,
                 grantedAuthorities);
+    	}
+    	 catch (ExpiredJwtException e) {
+             LOG.error(e.getMessage());
+             return new JwtUserDetails(jwtUser.getUserName(), jwtUser.getId(),
+                     null,
+                     null);	
+         }
+         catch (Exception e) {
+         	  LOG.error(e.getMessage());
+         	 return new JwtUserDetails(jwtUser.getUserName(), jwtUser.getId(),
+                     null,
+                     null);
+         }
+    	
     }
 
     @Override

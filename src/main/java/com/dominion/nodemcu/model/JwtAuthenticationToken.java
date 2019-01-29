@@ -1,9 +1,9 @@
 package com.dominion.nodemcu.model;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 
 public class JwtAuthenticationToken extends UsernamePasswordAuthenticationToken{
-
     private String token;
 
     public JwtAuthenticationToken(String token) {

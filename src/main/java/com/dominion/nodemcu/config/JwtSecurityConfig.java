@@ -3,6 +3,7 @@ package com.dominion.nodemcu.config;
 import java.util.Collections;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,11 +26,13 @@ import com.dominion.nodemcu.jwtsecurity.JwtSuccessHandler;
 @Configuration
 public class JwtSecurityConfig extends WebSecurityConfigurerAdapter
 {
+	
     @Autowired
     private JwtAuthenticationProvider authenticationProvider;
     @Autowired
     private JwtAuthenticationEntryPoint entryPoint;
-
+    @Value("${path-authenticate-pattern}")
+    private String pattern;
     @Bean
     public AuthenticationManager authenticationManager() {
         return new ProviderManager(Collections.singletonList(authenticationProvider));
@@ -37,7 +40,7 @@ public class JwtSecurityConfig extends WebSecurityConfigurerAdapter
 
     @Bean
     public JwtAuthenticationTokenFilter authenticationTokenFilter() {
-        JwtAuthenticationTokenFilter filter = new JwtAuthenticationTokenFilter();
+        JwtAuthenticationTokenFilter filter = new JwtAuthenticationTokenFilter(pattern);
         filter.setAuthenticationManager(authenticationManager());
         filter.setAuthenticationSuccessHandler(new JwtSuccessHandler());
         return filter;
@@ -48,7 +51,7 @@ public class JwtSecurityConfig extends WebSecurityConfigurerAdapter
     protected void configure(HttpSecurity http) throws Exception {
 
         http.csrf().disable()
-                .authorizeRequests().antMatchers("/api/user/rest**").authenticated()
+                .authorizeRequests().antMatchers(pattern).authenticated()
                 .and()
                 .exceptionHandling().authenticationEntryPoint(entryPoint)
                 .and()

@@ -10,6 +10,11 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
+/*this whole class has been created as a result of this tutorial
+https://coder-coacher.github.io/Tech-Primers/Spring-Security-using-JWT-in-Spring-Boot-App-Tech-Primers--HYrUs1ZCLI.html
+https://github.com/TechPrimers/jwt-security-example
+*/
+
 @Component
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override

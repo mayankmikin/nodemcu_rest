@@ -77,7 +77,7 @@ public class User implements Serializable {
 	@NotEmpty(message = "Please provide an e-mail")
 	private String email;
 
-	@Transient
+	//@Transient
 	private String password;
 
 	private boolean enabled;

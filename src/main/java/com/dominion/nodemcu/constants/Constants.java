@@ -11,7 +11,7 @@ public class Constants
 	public static class UserConstants
 	{
 		public static final String USER_NOT_FOUND="User Not Found";
-		
+		public static final String INVALID_PASSWORD="Wrong Username or Password";
 		
 	}
 	public static class PublicConstants
