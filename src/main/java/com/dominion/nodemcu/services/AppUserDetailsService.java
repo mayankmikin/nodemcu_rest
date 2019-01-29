@@ -9,12 +9,14 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
 
 import com.dominion.nodemcu.entity.User;
 import com.dominion.nodemcu.repository.UserRepository;
 
 /*in order to retrieve user details from the database.
  * this user detail service is provided by spring */
+@Service
 public class AppUserDetailsService implements UserDetailsService {
 
 	  @Autowired
