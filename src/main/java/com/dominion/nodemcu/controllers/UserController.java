@@ -47,6 +47,8 @@ import com.dominion.nodemcu.entity.User;
 import com.dominion.nodemcu.exceptions.UserNotFoundException;
 import com.dominion.nodemcu.jwtsecurity.JwtGenerator;
 import com.dominion.nodemcu.model.JwtAuthenticationToken;
+import com.dominion.nodemcu.model.JwtUser;
+import com.dominion.nodemcu.model.JwtUserDetails;
 import com.dominion.nodemcu.model.Login;
 import com.dominion.nodemcu.model.UserModel;
 import com.dominion.nodemcu.repository.AccountRepository;
@@ -232,8 +234,10 @@ public class UserController
 		 @PostMapping("/login")
 		 public ResponseEntity<?> authenticate(@RequestBody Login login)
 		 {
-				
-			Optional<User> u= userRepo.findByEmail(login.getUsername());
+			 
+			 User u= userRepo.findByEmail(login.getUsername()).get();
+			 return new ResponseEntity<JwtUserDetails>(new JwtUserDetails(u.getEmail(), u.getId(), u.getConfirmationToken(), null),HttpStatus.OK);
+			/*Optional<User> u= userRepo.findByEmail(login.getUsername());
 			
 			if(u.isPresent())
 			{
@@ -242,9 +246,9 @@ public class UserController
 				{
 				
 
-					
-					//JwtAuthenticationToken jwt= new JwtAuthenticationToken(authenticate(new JwtUser(user.getEmail(),user.getId(),user.getRoles())));
-					//return new ResponseEntity<JwtAuthenticationToken>(jwt,HttpStatus.CREATED);
+					return authenticateLogin(login);
+					//JwtAuthenticationToken jwt= new JwtAuthenticationToken(authenticateLogi(new JwtUser(user.getEmail(),user.getId(),user.getRoles())));
+					//return new ResponseEntity<JwtAuthenticationToken>(authenticateLogin(login),HttpStatus.CREATED);
 				}
 				try 
 				{
@@ -280,7 +284,7 @@ public class UserController
 					LOG.error("Unknown Exception");
 					return new ResponseEntity<ApiResponseMessage>(new ApiResponseMessage(1, e.getMessage(), mapper.convertValue(e.getMessage(), JsonNode.class)),HttpStatus.BAD_REQUEST);
 				}
-			}
+			}*/
 		 }
 		 
 		 @PostMapping("/outh/token")
