@@ -1,0 +1,28 @@
+ROLE_ADMIN:
+     tenant: view
+     account: view,update
+     user: view,add
+     device: view,update,add,delete
+
+         
+ROLE_CLIENT:
+     tenant: view
+     account: view,update
+     user: view,add
+     device: view,update,add,delete
+            
+
+
+ROLE_USER_VIEW:   
+     tenant: view
+     account: view,update
+     user: view
+     device: view,update,add,delete
+     
+     
+     
+ROLE_USER_OWNER:   
+     tenant: view
+     account: view,add,edit,delete
+     user: view,add,edit,delete
+     device: view,edit,add,delete

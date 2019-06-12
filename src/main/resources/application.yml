@@ -1,9 +1,101 @@
-management:
-  security:
-    enabled: true
+#eureka:
+#  client:
+#    serviceUrl:
+#      defaultZone: ${EUREKA_URL:http://user:password@localhost:8761}/eureka/
+#   
+#    
+#  instance:
+#    hostname: ${DOMAIN_NAME:user-service}
+#    nonSecurePort: 80
+#    password: ${USER_PASSWORD:password}   
+#
+#server:
+#  port: 2225
+#  endpoint: https://users-microservice.herokuapp.com # used to send emails
+#  front-endPoint: https://iotic.herokuapp.com # used to send email for invitation
+#  
+#spring:
+#  application:
+#    name: user-service
+#    pub-sub: true
+#  data:
+#    mongodb:
+#     uri: mongodb+srv://neha:Password123@cluster0-fay7y.mongodb.net/test?retryWrites=true
+#     database: test
+     
 
 
+
+
+
+      
+server:
+  port: 9999
+  endpoint: http://localhost:9999 # used to send emails
+  front-endPoint: http://localhost:4300 # used to send email for invitation
 spring:
-  resources:
-    chain:
-      enabled: true
+  application:
+    name: user-service
+    pub-sub: true
+  data:
+    mongodb:
+     uri: mongodb+srv://neha:Password123@cluster0-fay7y.mongodb.net/test?retryWrites=true
+     database: test
+     #uri: mongodb://localhost/test 
+     
+     
+#     
+#  kafka:
+#     consumer:
+#        bootstrap-servers: localhost:9092
+#        group-id: group_id
+#        auto-offset-reset: earliest
+#        key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+#        value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+#     producer:
+#        bootstrap-servers: localhost:9092
+#        key-serializer: org.apache.kafka.common.serialization.StringSerializer
+#        value-serializer: org.apache.kafka.common.serialization.StringSerializer    
+#     users-topic: users
+
+
+
+
+
+# leave this config as is      
+account:
+    service:
+      uri: http://account-service
+             
+
+device:
+    service:
+      uri: http://device-service             
+
+tenant:
+    service:
+      uri: http://tenant-service   
+             
+roles_list:
+      ROLE_ADMIN, ROLE_CLIENT, ROLE_USER_VIEW,ROLE_USER_OWNER             
+      
+security:
+  jwt:
+    token:
+      secret-key: secret-key
+      expire-length: 3600000
+      
+
+      
+#  oauth2:
+#    client:
+#      registration:
+#        google:
+#              clientId: 485976246668-k6lkfupuhp6jck6f8bveruf1o7hgji1h.apps.googleusercontent.com
+#              clientSecret: -ecg8ZUGXLvfT0aOSG8LW5ux
+#              redirectUriTemplate: "{baseUrl}/oauth2/callback/{registrationId}"
+#              scope:
+#                - email
+#                - profile
+             
+             
