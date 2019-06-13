@@ -45,36 +45,25 @@ spring:
      
      
 #     
-#  kafka:
-#     consumer:
-#        bootstrap-servers: localhost:9092
-#        group-id: group_id
-#        auto-offset-reset: earliest
-#        key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-#        value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-#     producer:
-#        bootstrap-servers: localhost:9092
-#        key-serializer: org.apache.kafka.common.serialization.StringSerializer
-#        value-serializer: org.apache.kafka.common.serialization.StringSerializer    
-#     users-topic: users
+  kafka:
+     consumer:
+        bootstrap-servers: localhost:9092
+        group-id: group_id
+        auto-offset-reset: earliest
+        key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+        value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+     producer:
+        bootstrap-servers: localhost:9092
+        key-serializer: org.apache.kafka.common.serialization.StringSerializer
+        value-serializer: org.apache.kafka.common.serialization.StringSerializer    
+     users-topic: users
 
 
 
 
 
 # leave this config as is      
-account:
-    service:
-      uri: http://account-service
-             
 
-device:
-    service:
-      uri: http://device-service             
-
-tenant:
-    service:
-      uri: http://tenant-service   
              
 roles_list:
       ROLE_ADMIN, ROLE_CLIENT, ROLE_USER_VIEW,ROLE_USER_OWNER             
