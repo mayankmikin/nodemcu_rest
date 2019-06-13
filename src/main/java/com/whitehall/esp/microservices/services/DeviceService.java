@@ -56,7 +56,7 @@ public class DeviceService {
 	    		Account account=accountService.getAccount(Device.getAccount().getAccountId()).block();
 	    		Device.setAccount(account);
 	    	}
-	        return repository.save(Device);
+	        return exists?repository.save(device):repository.save(Device);
 	    }
 
 		public Flux<Device> findAll() {
