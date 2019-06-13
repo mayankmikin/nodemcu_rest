@@ -17,6 +17,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Document
@@ -24,6 +25,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
+@NoArgsConstructor
 public class Device implements Serializable {
 	 private static final long serialVersionUID = 820095909012312326L;
 	   // sequence,auto causes problem so id 1 given to device , 2 is given to manufacturer 

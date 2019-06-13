@@ -46,7 +46,7 @@ public class DeviceService {
 	    		exists=true;
 	    		device.setLocalIp(Device.getLocalIp());
 	    		device.setExternalIp(Device.getExternalIp());
-	    		//device.setUserDefinedName(Device.getUserDefinedName());
+	    		device.setUserDefinedName(Device.getUserDefinedName());
 	    		log.info("updating existing device : {}",device);
 	    		
 			}
@@ -56,7 +56,7 @@ public class DeviceService {
 	    		Account account=accountService.getAccount(Device.getAccount().getAccountId()).block();
 	    		Device.setAccount(account);
 	    	}
-	        return exists?repository.save(device):repository.save(Device);
+	        return repository.save(Device);
 	    }
 
 		public Flux<Device> findAll() {
