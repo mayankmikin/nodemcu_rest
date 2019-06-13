@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.whitehall.esp.microservices</groupId>
-	<artifactId>user-service</artifactId>
+	<artifactId>nodemcu</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>nodemcu</name>
 	<description>Spring Boot Rest API project for IOT</description>
