@@ -342,16 +342,25 @@ public class UserController extends GenericController
 		log.info("making a call to create an account");
 		log.info(mapper.print(account));
 		log.info("is pubsub enabled : {}",pubsubEnabled);
-		if(pubsubEnabled)
-			this.kafkaProducer.sendMessageUser(mapper.print(user));
-		else 
-			sendEmail(userModel.getUserId(), account.getAccountId());
 		
+
+			
+		final String accountId=account.getAccountId(); 
 		log.info("user registered with these details");
 		log.info(mapper.print(userModel));
 		return new ResponseEntity<Mono<User>>(user.map(u->
 		{
-		this.kafkaProducer.sendMessageUser(mapper.print(u));
+		
+		if(pubsubEnabled)
+			this.kafkaProducer.sendMessageUser(mapper.print(u));
+		else
+		{
+//			try {
+//				sendEmail(u.getUserId(), accountId);
+//			} catch (MessagingException | IOException | EntityNotFoundException e) {
+//				e.printStackTrace();
+//			}
+		}
 		mapper.print(u);
 		return u;
 		}		

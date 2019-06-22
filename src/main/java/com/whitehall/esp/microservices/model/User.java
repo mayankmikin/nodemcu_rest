@@ -51,7 +51,7 @@ public class User implements Serializable {
 
 	private String lastname;
 
-	private String address;
+	private Address address;
 
 	private Boolean isactive;
 
