@@ -128,7 +128,7 @@ public class User implements Serializable {
 	public Permissions setPermissionsFromFile() throws RoleInfoNotFoundException
 	{
 		this.permissions=loadPermissions();
-		if(!this.roles.isEmpty())
+		if(null!=this.roles && !this.roles.isEmpty())
 		{
 			
 		

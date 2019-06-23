@@ -482,26 +482,33 @@ public class UserController extends GenericController
 	
 	@GetMapping(value = "/welcomeuser")
 	public ResponseEntity<String> sendWelcomeEmail(User user) throws AddressException, MessagingException, IOException {
-		String bodyHTML = "";
-		bodyHTML += getHtmlContent("src/main/resources/htmlcontent/welcomeEmail.html");
-		Properties props = new Properties();
-		props.put("mail.smtp.auth", "true");
-		props.put("mail.smtp.starttls.enable", "true");
-		props.put("mail.smtp.host", "smtp.gmail.com");
-		props.put("mail.smtp.port", "587");
 
-		Session session = Session.getInstance(props, new javax.mail.Authenticator() {
-			protected PasswordAuthentication getPasswordAuthentication() {
-				return new PasswordAuthentication("whitehalltechnologies@gmail.com", "whitehall@123");
-			}
-		});
-		Message msg = new MimeMessage(session);
-		msg.setFrom(new InternetAddress("whitehalltechnologies@gmail.com", false));
-		msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(user.getEmail()));
-		msg.setSubject("Welcome " + user.getFirstname());
-		msg.setContent(bodyHTML, "text/html");
-		msg.setSentDate(new Date());
-		Transport.send(msg);
+		if(pubsubEnabled)
+			this.kafkaProducer.sendMessageUser(mapper.print(user));
+		else
+		{
+			String bodyHTML = "";
+			bodyHTML += getHtmlContent("src/main/resources/htmlcontent/welcomeEmail.html");
+			Properties props = new Properties();
+			props.put("mail.smtp.auth", "true");
+			props.put("mail.smtp.starttls.enable", "true");
+			props.put("mail.smtp.host", "smtp.gmail.com");
+			props.put("mail.smtp.port", "587");
+	
+			Session session = Session.getInstance(props, new javax.mail.Authenticator() {
+				protected PasswordAuthentication getPasswordAuthentication() {
+					return new PasswordAuthentication("whitehalltechnologies@gmail.com", "Whitehall@123");
+				}
+			});
+			Message msg = new MimeMessage(session);
+			msg.setFrom(new InternetAddress("whitehalltechnologies@gmail.com", false));
+			msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(user.getEmail()));
+			msg.setSubject("Welcome " + user.getFirstname());
+			msg.setContent(bodyHTML, "text/html");
+			msg.setSentDate(new Date());
+			Transport.send(msg);
+		}
+		
 		return new ResponseEntity<String>("Email sent successfully", HttpStatus.OK);
 	}
 	
@@ -620,7 +627,7 @@ public class UserController extends GenericController
 
 		Session session = Session.getInstance(props, new javax.mail.Authenticator() {
 			protected PasswordAuthentication getPasswordAuthentication() {
-				return new PasswordAuthentication("whitehalltechnologies@gmail.com", "whitehall@123");
+				return new PasswordAuthentication("whitehalltechnologies@gmail.com", "Whitehall@123");
 			}
 		});
 		Message msg = new MimeMessage(session);
