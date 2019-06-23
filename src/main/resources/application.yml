@@ -31,7 +31,7 @@
       
 server:
   port: 9999
-  endpoint: http://localhost:9999 # used to send emails
+  endpoint: http://www.studify.in # used to send emails
   front-endPoint: http://localhost:4300 # used to send email for invitation
 spring:
   application:
