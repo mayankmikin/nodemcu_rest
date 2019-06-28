@@ -365,9 +365,9 @@ public class UserController extends GenericController
 		), HttpStatus.OK);
 	}
 
-	@PatchMapping("{userEmail}/notification/{notificationId}/status/read")
-	public Mono<User> NotifcationStatusRead(@PathVariable String notificationId, @PathVariable String userEmail)throws JsonProcessingException 
-	{
+	@PatchMapping("/notification/{notificationId}/status/read")
+	public Mono<User> NotifcationStatusRead(@PathVariable String notificationId)throws JsonProcessingException 
+	{	String userEmail = getEmailFromToken();
 		User user =  userService.findByEmail(userEmail).block();
 		List<Notifications> notifications = user.getNotifications();
 //		for(Notifications notification: notifications) {
