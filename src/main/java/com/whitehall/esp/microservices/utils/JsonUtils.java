@@ -36,6 +36,12 @@ public class JsonUtils {
 		 parentNode.put("data", value);
 		 return parentNode;
 	}
+	public  JsonNode setError(String value)
+	{
+		parentNode.put("error", true);
+		 parentNode.put("message", value);
+		 return parentNode;
+	}
 	
 	public String print(Object value) 
 	{		

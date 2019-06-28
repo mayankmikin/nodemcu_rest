@@ -161,9 +161,16 @@ public class UserController extends GenericController
 
 	
 	@PostMapping("/authenticate")
-	public ResponseEntity<JWTTokenPayload> authenticate(@RequestBody Login login) {
+	public ResponseEntity<?> authenticate(@RequestBody Login login) {
+		try
+		{
 		return new ResponseEntity<JWTTokenPayload>(
 				new JWTTokenPayload(userService.signin(login.getUsername(), login.getPassword())), HttpStatus.OK);
+		}
+		catch(Exception ex)
+		{
+			return  new ResponseEntity<>(mapper.setError(ex.getMessage()), HttpStatus.UNPROCESSABLE_ENTITY);
+		}
 	}
 
 	@PostMapping("/oauth2/callback/{registrationId}")
