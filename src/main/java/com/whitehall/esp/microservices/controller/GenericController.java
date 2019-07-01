@@ -1,5 +1,6 @@
 package com.whitehall.esp.microservices.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
@@ -13,7 +14,7 @@ public class GenericController {
 //	private ExternalConfig externalConfig;
 ////	@PostMapping("/Tenant/add")
 ////	public <Mono>
-//	 @Autowired
+	 @Autowired
 	public IAuthenticationFacade authenticationFacade;
 //	 
 //	@PatchMapping("/tenant/update/{tenantName}") 
