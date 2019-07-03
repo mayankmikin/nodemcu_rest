@@ -124,6 +124,14 @@ public class UserController extends GenericController
 		log.info("findById: id={}", id);
 		return userService.getUser(id);
 	}
+	
+	@GetMapping("/bytoken")
+	public Mono<User> findFromToken() {
+		log.info("inside findfromtoken");
+		String email= getEmailFromToken();
+		return userService.findByEmail(email);
+	}
+	
 
 	@PostMapping("/")
 	public Mono<User> create(@Valid @RequestBody User User) {
