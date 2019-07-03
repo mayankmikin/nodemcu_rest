@@ -22,8 +22,6 @@ import javax.validation.Valid;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.client.ServiceInstance;
-import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -49,6 +47,7 @@ import com.whitehall.esp.microservices.model.NotificationType;
 import com.whitehall.esp.microservices.model.Notifications;
 import com.whitehall.esp.microservices.model.Role;
 import com.whitehall.esp.microservices.model.User;
+import com.whitehall.esp.microservices.services.AccountService;
 import com.whitehall.esp.microservices.services.RolesService;
 import com.whitehall.esp.microservices.services.UserService;
 import com.whitehall.esp.microservices.utils.JsonUtils;
@@ -80,8 +79,8 @@ public class UserController extends GenericController
 	private String frontEndPath;
 	
 	//private GenericController genericController;
-	@Autowired
-	private DiscoveryClient discoveryClient;
+//	@Autowired
+//	private DiscoveryClient discoveryClient;
 
 	@Autowired
 	private UserService userService;
@@ -97,7 +96,8 @@ public class UserController extends GenericController
 	
 	@Autowired
 	private JsonUtils mapper;
-	
+	@Autowired
+	private AccountService accountService;
 	@Autowired
 	private ObjectMapper objectmapper;
 	
@@ -107,10 +107,10 @@ public class UserController extends GenericController
 	 * log.info("findByUser: UserCode={}", code); return
 	 * userService.findByUserCode(code); }
 	 */
-	@GetMapping("/service-instances/{applicationName}")
-	public List<ServiceInstance> serviceInstancesByApplicationName(@PathVariable String applicationName) {
-		return this.discoveryClient.getInstances(applicationName);
-	}
+//	@GetMapping("/service-instances/{applicationName}")
+//	public List<ServiceInstance> serviceInstancesByApplicationName(@PathVariable String applicationName) {
+//		return this.discoveryClient.getInstances(applicationName);
+//	}
 
 	@GetMapping("/")
 	public Flux<User> findAll() {
@@ -149,31 +149,30 @@ public class UserController extends GenericController
 	}
 
 	@GetMapping("/account/{accountId}")
-	public Flux<User> findByAccountAccountId(@PathVariable String accountId) {
+	public Flux<User> findByAccountId(@PathVariable String accountId) {
 		log.info("findAll find With AccountId: " + accountId);
 		return userService.findByAccountAccountId(accountId);
 	}
 
 	@GetMapping("/accounts/all")
 	public Flux<Account> findByAccounts() {
-		return userService.findByAccounts();
+		return accountService.findAll();
 	}
 
 	
 	@PostMapping("/authenticate")
-	public ResponseEntity<JWTTokenPayload> authenticate(@RequestBody Login login) {
+	public ResponseEntity<?> authenticate(@RequestBody Login login) {
+		try
+		{
 		return new ResponseEntity<JWTTokenPayload>(
 				new JWTTokenPayload(userService.signin(login.getUsername(), login.getPassword())), HttpStatus.OK);
-	}
-	
-	@GetMapping("/bytoken")
-	public Mono<User> findFromToken() {
-		log.info("inside findfromtoken");
-		String email= getEmailFromToken();
-		return userService.findByEmail(email);
+		}
+		catch(Exception ex)
+		{
+			return  new ResponseEntity<>(mapper.setError(ex.getMessage()), HttpStatus.UNPROCESSABLE_ENTITY);
+		}
 	}
 
-	
 	@PostMapping("/oauth2/callback/{registrationId}")
 	public ResponseEntity<String> authenticate(@PathVariable String registrationId) {
 		log.info("registrationId: " + registrationId);
@@ -335,7 +334,7 @@ public class UserController extends GenericController
 	
 		Account account = new Account();
 		account.setAccountName(userModel.getEmail());
-		Mono<Account> createdAccount = userService.createAccount(account);
+		Mono<Account> createdAccount = accountService.createAccount(account);
 		account = createdAccount.block();
 		userModel.setAccount(account);	
 		userModel.setRoles(roles);
@@ -366,9 +365,9 @@ public class UserController extends GenericController
 		), HttpStatus.OK);
 	}
 
-	@PatchMapping("{userEmail}/notification/{notificationId}/status/read")
-	public Mono<User> NotifcationStatusRead(@PathVariable String notificationId, @PathVariable String userEmail)throws JsonProcessingException 
-	{
+	@PatchMapping("/notification/{notificationId}/status/read")
+	public Mono<User> NotifcationStatusRead(@PathVariable String notificationId)throws JsonProcessingException 
+	{	String userEmail = getEmailFromToken();
 		User user =  userService.findByEmail(userEmail).block();
 		List<Notifications> notifications = user.getNotifications();
 //		for(Notifications notification: notifications) {
@@ -404,7 +403,7 @@ public class UserController extends GenericController
 	@PostMapping("/register/{accountId}")
 	public ResponseEntity<Mono<User>> registerAndAddToAccount(@RequestBody User userModel,
 			@PathVariable String accountId) throws JsonProcessingException, AccountNotFoundException, AddressException,
-			MessagingException, IOException, RoleInfoNotFoundException {
+			MessagingException, IOException, RoleInfoNotFoundException, EntityNotFoundException {
 		List<Role> roles = new ArrayList<Role>();
 		if (!userModel.getRoles().isEmpty()) {
 			userModel.getRoles().forEach(rol -> {
@@ -416,7 +415,7 @@ public class UserController extends GenericController
 		}
 		log.info("user registered with these details");
 		log.info(mapper.print(userModel));
-		Mono<Account> createdAccount = userService.findByAccountID(accountId);
+		Mono<Account> createdAccount = accountService.getAccount(accountId);
 		Account account = createdAccount.block();
 		if (null == account) {
 			throw new AccountNotFoundException();
@@ -528,7 +527,7 @@ public class UserController extends GenericController
 	public ResponseEntity<User> sendEmail(@PathVariable String userId, @PathVariable String accountId)
 			throws AddressException, MessagingException, IOException, JsonProcessingException, EntityNotFoundException {
 		User user = userService.getUser(userId).block();
-		Account account = userService.findByAccountID(accountId).block();
+		Account account = accountService.getAccount(accountId).block();//userService.findByAccountID(accountId).block();
 		log.info("sending email to user with details as:");
 		log.info(mapper.print(user));
 		log.info("account details as:");
@@ -587,10 +586,10 @@ public class UserController extends GenericController
 
 	@GetMapping(value = "/sendemail/invite/{email}/{accountId}")
 	public ResponseEntity<JsonNode> inviteUserThroughEmail(@PathVariable String email,@PathVariable String accountId)
-			throws AddressException, MessagingException, IOException,AccountNotFoundException {
+			throws AddressException, MessagingException, IOException,AccountNotFoundException, EntityNotFoundException {
 		String topEmailPath="src/main/resources/htmlcontent/invitationmail_top.html";
 		String bottomEmailPath="src/main/resources/htmlcontent/invitationmail.html";
-		Mono<Account> createdAccount = userService.findByAccountID(accountId);
+		Mono<Account> createdAccount = accountService.getAccount(accountId);
 		Account account = createdAccount.block();
 		if (null == account) {
 			throw new AccountNotFoundException();
