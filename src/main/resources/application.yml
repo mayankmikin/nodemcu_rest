@@ -2,7 +2,7 @@ eureka:
   client:
     serviceUrl:
       #defaultZone: ${EUREKA_URL:http://user:password@localhost:8761}/eureka/
-      defaultZone: ${EUREKA_URL:http://mayank.whitehall:8761}/eureka/
+      defaultZone: ${EUREKA_URL:http://mayank-desktop:8761}/eureka/
 #   
 #    
 #  instance:
@@ -43,7 +43,11 @@ spring:
      uri: mongodb+srv://neha:Password123@cluster0-fay7y.mongodb.net/test?retryWrites=true
      database: test
      #uri: mongodb://localhost/test 
-     
+    mqtt:
+      uri: tcp://localhost:1000 
+      username: mayank
+      password: 123
+      topic: devices/+ 
      
 #     
   kafka:
