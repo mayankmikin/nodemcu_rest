@@ -2,6 +2,10 @@ package com.whitehall.esp.microservices.controller;
 
 import javax.validation.Valid;
 
+import org.eclipse.paho.client.mqttv3.IMqttClient;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.eclipse.paho.client.mqttv3.MqttPersistenceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.whitehall.esp.microservices.config.MqttOutboundConfig;
+//import com.whitehall.esp.microservices.config.MqttOutboundConfig;
 import com.whitehall.esp.microservices.exceptions.EntityNotFoundException;
 import com.whitehall.esp.microservices.model.Device;
 import com.whitehall.esp.microservices.services.DeviceService;
@@ -36,6 +40,9 @@ public class DeviceController {
 	public static ObjectMapper mapper = new ObjectMapper();
 	@Autowired
 	private DeviceService deviceService;
+	
+	@Autowired
+	private IMqttClient mqttPublisher;
 	
 	/*
 	 * @GetMapping("/code/{Device}") public Mono<Device>
@@ -98,8 +105,9 @@ public class DeviceController {
 		return deviceService.editDevice(Device);
 	}
 	
-	@GetMapping("/test")
-	public void testMqtt() {
-		MqttOutboundConfig.sendToMqtt("hello world", "/device/abc");
+	@GetMapping("/test/topic/{topicName}")
+	public void testMqtt(@PathVariable String topicName, @RequestBody String message) throws MqttPersistenceException, MqttException {
+		//MqttOutboundConfig.sendToMqtt("hello world", "/device/abc");
+		mqttPublisher.publish(topicName, new MqttMessage(message.getBytes()));
 	}
 }
