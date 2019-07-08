@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.whitehall.esp.microservices.config.MqttOutboundConfig;
 import com.whitehall.esp.microservices.exceptions.EntityNotFoundException;
 import com.whitehall.esp.microservices.model.Device;
 import com.whitehall.esp.microservices.services.DeviceService;
@@ -98,8 +97,4 @@ public class DeviceController {
 		return deviceService.editDevice(Device);
 	}
 	
-	@GetMapping("/test")
-	public void testMqtt() {
-		MqttOutboundConfig.sendToMqtt("hello world", "/device/abc");
-	}
 }

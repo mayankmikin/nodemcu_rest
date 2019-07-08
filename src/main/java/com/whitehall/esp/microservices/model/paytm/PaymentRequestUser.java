@@ -1,4 +1,4 @@
-package com.whitehall.esp.microservices.model.payment;
+package com.whitehall.esp.microservices.model.paytm;
 
 import com.whitehall.esp.microservices.model.User;
 

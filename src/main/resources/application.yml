@@ -23,7 +23,22 @@ eureka:
 #    mongodb:
 #     uri: mongodb+srv://neha:Password123@cluster0-fay7y.mongodb.net/test?retryWrites=true
 #     database: test
-     
+
+paytm.payment:
+  sandbox:
+    merchantId: bhPfKL30259120818182
+    merchantKey: B8yk53w@YcJLow%G
+    channelId: WEB
+    website: WEBSTAGING
+    industryTypeId: Retail
+    paytmUrl: https://securegw-stage.paytm.in/theia/processTransaction
+    callbackUrl: http://localhost:8080/pgresponse
+    details:
+      MID: '${paytm.payment.sandbox.merchantid}'
+      CHANNEL_ID: '${paytm.payment.sandbox.channelid}'
+      INDUSTRY_TYPE_ID: '${paytm.payment.sandbox.industrytypeid}'
+      WEBSITE: '${paytm.payment.sandbox.website}'
+      CALLBACK_URL: '${paytm.payment.sandbox.callbackUrl}'
 
 
 
