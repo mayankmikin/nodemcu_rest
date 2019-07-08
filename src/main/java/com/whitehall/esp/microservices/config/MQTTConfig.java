@@ -18,8 +18,11 @@ import org.springframework.integration.mqtt.core.MqttPahoClientFactory;
 import org.springframework.integration.mqtt.inbound.MqttPahoMessageDrivenChannelAdapter;
 import org.springframework.integration.mqtt.support.DefaultPahoMessageConverter;
 
+import lombok.extern.slf4j.Slf4j;
+
 
 @Configuration
+@Slf4j
 public class MQTTConfig {
 	
 	@Value("${spring.data.mqtt.uri}")
@@ -38,9 +41,10 @@ public class MQTTConfig {
 	public MqttPahoClientFactory mqttClientFactory() {
 		DefaultMqttPahoClientFactory factory = new DefaultMqttPahoClientFactory();
 		MqttConnectOptions options = new MqttConnectOptions();
+		log.info("host is {}",host);
 		options.setServerURIs(new String[] { host });
-		options.setUserName(username);
-		options.setPassword(password.toCharArray());
+		//options.setUserName(username);
+		//options.setPassword(password.toCharArray());
 		factory.setConnectionOptions(options);
 		return factory;
 	}

@@ -105,7 +105,7 @@ public class DeviceController {
 		return deviceService.editDevice(Device);
 	}
 	
-	@GetMapping("/test/topic/{topicName}")
+	@PostMapping("/test/topic/{topicName}")
 	public void testMqtt(@PathVariable String topicName, @RequestBody String message) throws MqttPersistenceException, MqttException {
 		//MqttOutboundConfig.sendToMqtt("hello world", "/device/abc");
 		mqttPublisher.publish(topicName, new MqttMessage(message.getBytes()));
