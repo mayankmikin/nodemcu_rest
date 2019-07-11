@@ -8,7 +8,6 @@ import com.whitehall.esp.microservices.config.IAuthenticationFacade;
 
 import lombok.extern.slf4j.Slf4j;
 @Component
-@Slf4j
 public class GenericController {
 //	@Autowired
 //	private ExternalConfig externalConfig;

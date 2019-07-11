@@ -97,13 +97,12 @@ public class PaytmPaymentController extends GenericController{
 		return "test successfull";
 	}
     
-    @GetMapping("initiate/{planId}")
+    @PostMapping("initiate/{planId}")
     public TransactionPaymentOption devicePayment(@RequestBody Device devices[],@PathVariable String planId){
-    	
+    	log.info("inside devicePayment");
     	Plan plan =  planService.findPlanByID(planId).block();
-    	
     	String txnAmount = new Integer(devices.length * plan.getAmount()).toString();
-    	
+    
     	return initiateTransaction(txnAmount);
     }
     
@@ -180,16 +179,16 @@ public class PaytmPaymentController extends GenericController{
     	return null;
     }
     
-    @PostMapping("/login/otp/{txnToken}/{phone}")
-    String sendLoginOTP(@PathVariable String txnToken, @RequestHeader(name=HttpHeaders.AUTHORIZATION) String token,@PathVariable String phone) {
-    	log.info("inside sendLoginOTP, txnToken={}, token={}",txnToken,token);
+    @PostMapping("/login/otp/{txnToken}")
+    String sendLoginOTP(@PathVariable String txnToken, @RequestHeader(name=HttpHeaders.AUTHORIZATION) String token,@RequestBody String phone) {
+    	log.info("inside sendLoginOTP, txnToken={}, token={} phone={}",txnToken,token,phone);
     	Transaction transaction = transactionService.findTransactionById(txnToken).block();
-    	
+    	log.info("transaction={}",transaction);
     	String userEmail =    getEmailFromToken();
 		 User user = userService.findByEmail(userEmail).block();
 		 
     	try {
-        	String paytmParams_body = "{\"mobileNumber\":\""+user.getPhone()+"\"}";
+        	String paytmParams_body = "{\"mobileNumber\":\""+phone+"\"}";
         	LoginOTPRequestHead head = new LoginOTPRequestHead(user.getUserId(),version,new Long(System.currentTimeMillis()).toString(),channelId,txnToken);
         	String paytmParams_head = objectMapper.writeValueAsString(head);
     	String transactionURL = "https://securegw-stage.paytm.in/theia/api/v1/login/sendOtp?mid=" + MERCHANT_MID + "&orderId=" + transaction.getOrderId();// for staging
@@ -212,8 +211,8 @@ public class PaytmPaymentController extends GenericController{
     	return null;
     }
     
-    @RequestMapping("/login/otp/{otp}/{txnToken}")
-    Boolean validateLoginOTP(@PathVariable String txnToken,@PathVariable String otp, @RequestHeader(name=HttpHeaders.AUTHORIZATION) String token) {
+    @RequestMapping("/login/otp/{txnToken}")
+    Boolean validateLoginOTP(@PathVariable String txnToken,@RequestBody String otp, @RequestHeader(name=HttpHeaders.AUTHORIZATION) String token) {
     	
     	log.info("inside validateLoginOTP, txnToken={}, token={}",txnToken,token);
     	Transaction transaction = transactionService.findTransactionById(txnToken).block();
