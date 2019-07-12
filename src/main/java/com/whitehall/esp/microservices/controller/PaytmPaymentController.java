@@ -8,9 +8,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -180,7 +183,7 @@ public class PaytmPaymentController extends GenericController{
     }
     
     @PostMapping("/login/otp/{txnToken}")
-    String sendLoginOTP(@PathVariable String txnToken, @RequestHeader(name=HttpHeaders.AUTHORIZATION) String token,@RequestBody String phone) {
+    ResponseEntity<String> sendLoginOTP(@PathVariable String txnToken, @RequestHeader(name=HttpHeaders.AUTHORIZATION) String token,@RequestBody String phone) {
     	log.info("inside sendLoginOTP, txnToken={}, token={} phone={}",txnToken,token,phone);
     	Transaction transaction = transactionService.findTransactionById(txnToken).block();
     	log.info("transaction={}",transaction);
@@ -203,18 +206,19 @@ public class PaytmPaymentController extends GenericController{
 
 	    
 	    LoginOTPRespond loginOTPRespond = restcall.exchange(transactionURL, HttpMethod.POST, entity, LoginOTPRespond.class).getBody();
+	    log.info("response={}",loginOTPRespond.getBody().getResultInfo());
 	    
-    	    return loginOTPRespond.getBody().getResultInfo().getResultMsg();
+    	    return new ResponseEntity<String>(objectMapper.writeValueAsString(loginOTPRespond.getBody().getResultInfo().getResultCode()),HttpStatus.OK);
     	} catch (Exception exception) {
     	    exception.printStackTrace();
     	}
-    	return null;
+    	return new ResponseEntity<String>("exception occurred",HttpStatus.EXPECTATION_FAILED);
     }
     
-    @RequestMapping("/login/otp/{txnToken}")
+    @PatchMapping("/login/otp/{txnToken}")
     Boolean validateLoginOTP(@PathVariable String txnToken,@RequestBody String otp, @RequestHeader(name=HttpHeaders.AUTHORIZATION) String token) {
     	
-    	log.info("inside validateLoginOTP, txnToken={}, token={}",txnToken,token);
+    	log.info("inside validateLoginOTP, txnToken={}, token={} , otp{}",txnToken,token,otp);
     	Transaction transaction = transactionService.findTransactionById(txnToken).block();
     	
     	String userEmail =    getEmailFromToken();
