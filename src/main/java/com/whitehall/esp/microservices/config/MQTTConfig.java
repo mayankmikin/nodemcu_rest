@@ -85,7 +85,7 @@ public class MQTTConfig {
 	@Bean
 	public MessageProducerSupport mqttInbound() {
 		MqttPahoMessageDrivenChannelAdapter adapter = new MqttPahoMessageDrivenChannelAdapter("siSampleConsumer",
-				mqttClientFactory(), "device/test");
+				mqttClientFactory(), "device/+");
 		adapter.setCompletionTimeout(5000);
 		adapter.setConverter(new DefaultPahoMessageConverter());
 		adapter.setQos(1);
