@@ -59,9 +59,9 @@ spring:
      database: test
      #uri: mongodb://localhost/test 
     mqtt:
-      uri: tcp://localhost:1000 
-      username: mayank
-      password: 123
+      uri: tcp://localhost:1883
+      username: iotic
+      password: iotic
       topic: devices/+ 
      
 #     
