@@ -9,6 +9,7 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.integration.endpoint.MessageProducerSupport;
@@ -43,8 +44,8 @@ public class MQTTConfig {
 		MqttConnectOptions options = new MqttConnectOptions();
 		log.info("host is {}",host);
 		options.setServerURIs(new String[] { host });
-		//options.setUserName(username);
-		//options.setPassword(password.toCharArray());
+		options.setUserName(username);
+		options.setPassword(password.toCharArray());
 		factory.setConnectionOptions(options);
 		return factory;
 	}
@@ -85,7 +86,7 @@ public class MQTTConfig {
 	@Bean
 	public MessageProducerSupport mqttInbound() {
 		MqttPahoMessageDrivenChannelAdapter adapter = new MqttPahoMessageDrivenChannelAdapter("siSampleConsumer",
-				mqttClientFactory(), "device/+");
+				mqttClientFactory(), "device/+","device/+/in");
 		adapter.setCompletionTimeout(5000);
 		adapter.setConverter(new DefaultPahoMessageConverter());
 		adapter.setQos(1);

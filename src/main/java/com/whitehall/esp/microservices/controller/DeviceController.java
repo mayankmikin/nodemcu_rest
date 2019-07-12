@@ -1,8 +1,12 @@
 package com.whitehall.esp.microservices.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+
 import javax.validation.Valid;
 
-import org.apache.coyote.Response;
 import org.eclipse.paho.client.mqttv3.IMqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
@@ -21,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.whitehall.esp.microservices.config.MQTTConfig;
 //import com.whitehall.esp.microservices.config.MqttOutboundConfig;
 import com.whitehall.esp.microservices.exceptions.EntityNotFoundException;
 import com.whitehall.esp.microservices.model.Device;
@@ -49,6 +54,10 @@ public class DeviceController extends GenericController{
 	
 	@Autowired
 	private IMqttClient mqttPublisher;
+	
+	@Autowired
+	private IMqttClient subscriber;
+	
 	
 	@Autowired
 	private UserService userService;
@@ -130,20 +139,44 @@ public class DeviceController extends GenericController{
 		
 		return new ResponseEntity(HttpStatus.OK);
 	}
-	@PatchMapping("/mqtt/status")
-	public ResponseEntity getDeviceStatus(@RequestBody String deviceId) throws MqttPersistenceException, MqttException {
-		String userEmail = getEmailFromToken();
-		User user = userService.findByEmail(userEmail).block();
-		
-		Device device =  deviceService.findBySerialId(deviceId).block();
-		
-		if(!device.getAccount().equals(user.getAccount()))
-			return new ResponseEntity("You dont have access of this device", HttpStatus.UNAUTHORIZED);
-		
-		String topic = "devices/"+deviceId;
-		String msg = "3";
-		mqttPublisher.publish(topic, new MqttMessage(msg.getBytes()));	
-		
+	@PatchMapping("/mqtt/publish")
+	public ResponseEntity publish(@RequestBody String deviceId) throws MqttPersistenceException, MqttException
+	{
+		log.info("device id is: {}",deviceId);
+		String publishTopicName = "device/"+deviceId;
+		mqttPublisher.publish(publishTopicName, new MqttMessage("hello".getBytes()));
 		return new ResponseEntity(HttpStatus.OK);
 	}
+	@PatchMapping("/mqtt/status")
+	public ResponseEntity<List<String>> getDeviceStatus(@RequestBody String deviceId) throws MqttPersistenceException, MqttException, InterruptedException {
+		String userEmail = getEmailFromToken();
+		User user = userService.findByEmail(userEmail).block();
+		String payloadRespone="";
+		log.info("device id is: {}",deviceId);
+		Device device =  deviceService.findBySerialId(deviceId).block();
+		
+//		if(!device.getAccount().equals(user.getAccount()))
+//			return new ResponseEntity("You dont have access of this device", HttpStatus.UNAUTHORIZED);
+		
+		String publishTopicName = "device/"+deviceId;
+		String subsribeTopicName = "device/"+deviceId+"/in";
+		
+		CountDownLatch receivedSignal = new CountDownLatch(10);
+		List<String> responsemessage=new ArrayList<String>();
+		subscriber.subscribe(subsribeTopicName, (topic, msg) -> {
+		    byte[] payload = msg.getPayload();
+		    // ... payload handling omitted
+		    log.info("message recived from topic is:{}",msg.toString());
+		    responsemessage.add(msg.toString());
+		    receivedSignal.countDown();
+		   
+		});  
+		mqttPublisher.publish(publishTopicName, new MqttMessage("3".toString().getBytes()));
+		receivedSignal.await(3, TimeUnit.SECONDS);
+		return new ResponseEntity<List<String>>(responsemessage,HttpStatus.OK);
+	}
+//	@FunctionalInterface
+//	interface  IFunc{
+//	    String print();
+//	}
 }
