@@ -44,9 +44,9 @@ spring:
      database: test
      #uri: mongodb://localhost/test 
     mqtt:
-      uri: tcp://192.168.0.13:1883 
-      username: mayank
-      password: 123
+      uri: tcp://mayank-desktop:1883 
+      username: iotic
+      password: iotic
       topic: devices/+ 
      
 #     
