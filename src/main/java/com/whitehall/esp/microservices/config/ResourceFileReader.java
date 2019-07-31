@@ -32,7 +32,8 @@ public class ResourceFileReader
 		HomePageTabs hometab= new HomePageTabs();
 		TypeReference<HomePageTabs> typeReference = new TypeReference<HomePageTabs>() {
 		};
-		InputStream inputStream = TypeReference.class.getResourceAsStream("/json/homePageTabs.json");
+		//InputStream inputStream = TypeReference.class.getResourceAsStream("/json/homePageTabs.json");
+		InputStream inputStream = TypeReference.class.getResourceAsStream("/json/homePageTabsAssets.json");
 		try {
 			hometab = mapper.readValue(inputStream, typeReference);
 		}
