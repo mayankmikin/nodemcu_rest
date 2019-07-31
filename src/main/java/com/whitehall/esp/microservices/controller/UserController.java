@@ -141,6 +141,12 @@ public class UserController extends GenericController
 		log.info("account is: {}", user.block().getAccount().getAccountId());
 		return user;
 	}
+	@GetMapping("/byToken")
+	public Mono<User> findBytoken() {
+		Mono<User> user = userService.findByEmail(getEmailFromToken());
+		log.info("findBytoken called user is: {}");
+		return user;
+	}
 	
 	@GetMapping("/search/{regexp}")
 	public Flux<User> searchUserByEmailAsRegexp(@PathVariable String regexp) {

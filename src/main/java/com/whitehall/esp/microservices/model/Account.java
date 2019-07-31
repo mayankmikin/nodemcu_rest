@@ -3,6 +3,7 @@ import java.io.Serializable;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceConstructor;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -13,6 +14,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 @Data
+@Document
 @AllArgsConstructor
 @Getter
 @Setter

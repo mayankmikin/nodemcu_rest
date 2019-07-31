@@ -24,7 +24,7 @@ import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/api/v1")
-@Slf4j
+@Slf4j	
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 public class DeviceController {
 
