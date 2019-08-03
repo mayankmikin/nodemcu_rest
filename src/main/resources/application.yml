@@ -35,7 +35,8 @@ server:
   front-endPoint: http://localhost:4300 # used to send email for invitation
 spring:
   application:
-    name: user-service
+    name: node-mcu
+    whitehall-account-name-onserver: whitehalltechnologies
     pub-sub: true
   data:
     mongodb:

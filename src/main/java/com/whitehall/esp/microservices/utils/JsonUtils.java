@@ -36,6 +36,12 @@ public class JsonUtils {
 		 parentNode.put("data", value);
 		 return parentNode;
 	}
+	public  JsonNode setData(Boolean value)
+	{
+		
+		 parentNode.put("data", value);
+		 return parentNode;
+	}
 	
 	public String print(Object value) 
 	{		

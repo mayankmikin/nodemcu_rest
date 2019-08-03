@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.whitehall.esp.microservices.exceptions.EntityNotFoundException;
 import com.whitehall.esp.microservices.model.Device;
@@ -71,6 +72,12 @@ public class DeviceController {
 	public Mono <Device> findBySerialId(@PathVariable String serialId) {
 		return deviceService.findBySerialId(serialId);
 	}
+	
+	@GetMapping("/device/isDeviceReady/serialId/{serialId}")
+	public Mono <JsonNode> chechDeviceReadyToBeAddedOnServer(@PathVariable String serialId) throws EntityNotFoundException {
+		return deviceService.chechDeviceReadyToBeAddedOnServer(serialId);
+	}
+	
 	@GetMapping("/device/exporterId/{exporterId}")
 	public Flux<Device> findByExporterId(@PathVariable String exporterId)
 	 {

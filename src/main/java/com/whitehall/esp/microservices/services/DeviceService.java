@@ -5,10 +5,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.whitehall.esp.microservices.exceptions.DeviceAlreadyAddedInAnotherAccount;
 import com.whitehall.esp.microservices.exceptions.EntityNotFoundException;
 import com.whitehall.esp.microservices.model.Account;
 import com.whitehall.esp.microservices.model.Device;
 import com.whitehall.esp.microservices.repositories.DeviceRepository;
+import com.whitehall.esp.microservices.utils.JsonUtils;
 
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
@@ -27,7 +30,10 @@ public class DeviceService {
 	 * 
 	 * @Value("${account.service.uri}") private String accountServiceUri;
 	 */
+	@Value("${spring.application.whitehall-account-name-onserver}") private String whitehallAccountNameOnServer;
 	
+	@Autowired
+	private JsonUtils jsonUtils;
 	    public Mono<Device> getDevice(String deviceId) throws EntityNotFoundException {
 	        Mono<Device> device = repository.findById(deviceId);
 	        if (device == null) {
@@ -85,9 +91,41 @@ public class DeviceService {
 		        if (device == null) {
 		            throw new EntityNotFoundException(Device.class, "serialId", serialId.toString());
 		        }
-		        device.setAccount(new Account(accountId));
+		        else
+		        {
+		        	if(device.getAccount().getAccountName().equals(whitehallAccountNameOnServer))
+		        	{
+		        			device.setAccount(new Account(accountId));
+			        
+		        	}
+		        	else
+		        	{
+		        		throw new DeviceAlreadyAddedInAnotherAccount("Device Already Added In Another Account");
+		        	}
+		        }
+		        
 			return repository.save(device);
 		}
+		public Mono<JsonNode> chechDeviceReadyToBeAddedOnServer(String serialId)throws EntityNotFoundException {
+			Boolean isDeviceReady=false;
+		 	Device device = repository.findBySerialId(serialId).block();
+	        if (device == null) {
+	            throw new EntityNotFoundException(Device.class, "serialId", serialId.toString());
+	        }
+	        else
+	        {
+	        	if(device.getAccount().getAccountName().equals(whitehallAccountNameOnServer))
+	        	{
+	        		isDeviceReady=true;
+	        	}
+	        	else
+	        	{
+	        		isDeviceReady=false;
+	        	}
+	        }
+	        
+		return Mono.just(jsonUtils.setData(isDeviceReady));
+	}
 		public Mono<Device> editDevice(Device Device)throws EntityNotFoundException {
 		 	Device device = repository.findBySerialId(Device.getSerialId()).block();
 	        if (device == null) {
