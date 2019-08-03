@@ -4,6 +4,7 @@ import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -102,6 +103,16 @@ public class DeviceController {
 		log.info("editDevice :deviceId= {},accountId: {} ",Device.getDeviceId(),Device.getAccount().getAccountId());
 		
 		return deviceService.editDevice(Device);
+	}
+	@DeleteMapping("/device/{deviceId}")
+	public Mono<Device> deleteByDeviceId(@PathVariable("deviceId") String deviceId) throws EntityNotFoundException {
+		log.info("deleteByDeviceId: id={}", deviceId);
+		return deviceService.getDevice(deviceId);
+	}
+	@DeleteMapping("/device/serialId/{serialId}")
+	public Mono<Void> deleteBySerialId(@PathVariable("serialId") String serialId) throws EntityNotFoundException {
+		log.info("deleteBySerialId: id={}", serialId);
+		return deviceService.deleteBySerialId(serialId);
 	}
 	
 }

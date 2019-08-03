@@ -139,6 +139,14 @@ public class DeviceService {
 		{
 			return repository.existsBySerialId(serialId);
 		}
+		public Mono <Void> deleteByDeviceId(String deviceId) {
+			return repository.deleteById(deviceId);
+		}
+		
+		public Mono <Void> deleteBySerialId(String serialId) {
+			Device device = repository.findBySerialId(serialId).block();
+			return repository.delete(device);
+		}
 		
 	/*
 	 * public Mono<Account> findByAccountID(String accountId) {
