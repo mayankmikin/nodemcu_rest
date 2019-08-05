@@ -1,6 +1,6 @@
 package com.whitehall.esp.microservices.controller;
 
-import java.util.stream.Collectors;
+import java.util.List;
 
 import javax.security.auth.login.AccountNotFoundException;
 
@@ -15,11 +15,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.whitehall.esp.microservices.exceptions.BuildingInfoNotFoundException;
+import com.whitehall.esp.microservices.exceptions.EntityNotFoundException;
 import com.whitehall.esp.microservices.model.Account;
 import com.whitehall.esp.microservices.model.BuildingInfo;
+import com.whitehall.esp.microservices.model.Device;
 import com.whitehall.esp.microservices.model.frontend.MoveDeviceIntoRoom;
 import com.whitehall.esp.microservices.services.AccountService;
 import com.whitehall.esp.microservices.services.BuildingInfoService;
+import com.whitehall.esp.microservices.services.DeviceService;
 
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
@@ -33,6 +36,9 @@ public class BuildingInfoController
 {
 	@Autowired
 	private BuildingInfoService buildingInfoService;
+	
+	@Autowired
+	private DeviceService deviceService;
 	
 	@Autowired
 	private AccountService accountService;
@@ -90,13 +96,23 @@ public class BuildingInfoController
 		}
 		else
 		{
+			
+			
 			buildingInfo.getHouses().stream()
 			.flatMap(h->h.getFloor().stream()
 					).anyMatch(f-> f.getRooms().stream()
 							.filter(r-> r.getRoomId().equalsIgnoreCase(devices.getRoomId()))
 							.anyMatch(p-> p.getDevices().addAll(devices.getDeviceList()))
 							);
-			
+			List<Device>deviceToedit=devices.getDeviceList();
+			deviceToedit.forEach(d->{
+				d.setOccupied(true);
+				try {
+					deviceService.editDevice(d).block();
+				} catch (EntityNotFoundException e) {
+					e.printStackTrace();
+				}
+			});
 		}
 	
 		return buildingInfoService.createBuildingInfo(buildingInfo);

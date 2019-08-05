@@ -95,8 +95,13 @@ public class DeviceService {
 		        {
 		        	if(device.getAccount().getAccountName().equals(whitehallAccountNameOnServer))
 		        	{
-		        			device.setAccount(new Account(accountId));
+		        		Account account=accountService.getAccount(accountId).block();
+		        			device.setAccount(account);
 			        
+		        	}
+		        	else if(device.getAccount().getAccountId().equalsIgnoreCase(accountId))
+		        	{
+		        		throw new DeviceAlreadyAddedInAnotherAccount("Device Already Exists In this Account");
 		        	}
 		        	else
 		        	{
@@ -132,6 +137,7 @@ public class DeviceService {
 	            throw new EntityNotFoundException(Device.class, "serialId", Device.getSerialId());
 	        }
 	        device.setUserDefinedName(Device.getUserDefinedName());
+	        device.setOccupied(Device.isOccupied());
 		return repository.save(device);
 	}
 		
