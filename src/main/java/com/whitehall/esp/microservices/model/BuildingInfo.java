@@ -30,7 +30,7 @@ public class BuildingInfo implements Serializable
 
 	@Id
 	private String buildingInfoId;
-	
+	//@DBRef(lazy = true) 
 	private Set<House> houses= new HashSet<House>();
 	
 	private Account account;

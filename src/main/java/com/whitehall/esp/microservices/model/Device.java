@@ -58,5 +58,6 @@ public class Device implements Serializable {
 		
 		private Set<String> ports= new HashSet<String>();
 	
+		private  boolean isOccupied=false;
 
 }

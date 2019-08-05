@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 @Document
-@Data
+@Data	
 @AllArgsConstructor
 @Getter
 @Setter
@@ -33,7 +33,7 @@ public class House implements Serializable{
 	
 	@Indexed
 	private String houseName;
-	
+	//@DBRef(lazy = true) 
 	private Set<Floor> floor = new HashSet<Floor>();
 	
 	

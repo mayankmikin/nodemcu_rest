@@ -32,5 +32,6 @@ public class Floor implements Serializable{
 	
 	@Indexed
 	private String floorName;
+	//@DBRef(lazy = true) 
 	private Set<Room> rooms = new HashSet<Room>();
 }
