@@ -85,8 +85,9 @@ public class BuildingInfoController
 		return buildingInfoService.findByAccountAccountId(accountId);
 	}
 	
-	@PatchMapping("/moveDevice/accountId/{accountId}")
-	public Mono<BuildingInfo> moveDeviceIntoRoom(@RequestBody MoveDeviceIntoRoom devices,@PathVariable String accountId) 
+	@PatchMapping("/moveDevice/operation/{operationName}/accountId/{accountId}")
+	public Mono<BuildingInfo> moveDeviceIntoRoom(@RequestBody MoveDeviceIntoRoom devices,@PathVariable String accountId,
+			@PathVariable String operationName) 
 	{
 		log.info("moveDeviceIntoRoom accountId{}",accountId);
 		BuildingInfo buildingInfo=buildingInfoService.findById(devices.getBuildingInfoId()).block();
@@ -97,22 +98,48 @@ public class BuildingInfoController
 		else
 		{
 			
-			
-			buildingInfo.getHouses().stream()
-			.flatMap(h->h.getFloor().stream()
-					).anyMatch(f-> f.getRooms().stream()
-							.filter(r-> r.getRoomId().equalsIgnoreCase(devices.getRoomId()))
-							.anyMatch(p-> p.getDevices().addAll(devices.getDeviceList()))
+			if(operationName.equalsIgnoreCase("add"))
+			{
+				buildingInfo.getHouses().stream()
+				.flatMap(h->h.getFloor().stream()
+						).anyMatch(f-> f.getRooms().stream()
+								.filter(r-> r.getRoomId().equalsIgnoreCase(devices.getRoomId()))
+								.anyMatch(p-> 
+								
+										p.getDevices().addAll(devices.getDeviceList())
+									
+								)
 							);
-			List<Device>deviceToedit=devices.getDeviceList();
-			deviceToedit.forEach(d->{
-				d.setOccupied(true);
-				try {
-					deviceService.editDevice(d).block();
-				} catch (EntityNotFoundException e) {
-					e.printStackTrace();
-				}
-			});
+				
+				List<Device>deviceToedit=devices.getDeviceList();
+				deviceToedit.forEach(d->{
+					d.setOccupied(true);
+					try {
+						deviceService.editDevice(d).block();
+					} catch (EntityNotFoundException e) {
+						e.printStackTrace();
+					}
+				});
+			}
+			if(operationName.equalsIgnoreCase("remove"))
+			{
+				buildingInfo.getHouses().stream()
+				.flatMap(h->h.getFloor().stream()
+						).anyMatch(f-> f.getRooms().stream()
+								.filter(r-> r.getRoomId().equalsIgnoreCase(devices.getRoomId()))
+								.anyMatch(p-> p.getDevices().removeAll(devices.getDeviceList()))
+								);
+				List<Device>deviceToedit=devices.getDeviceList();
+				deviceToedit.forEach(d->{
+					d.setOccupied(false);
+					try {
+						deviceService.editDevice(d).block();
+					} catch (EntityNotFoundException e) {
+						e.printStackTrace();
+					}
+				});
+			}
+			
 		}
 	
 		return buildingInfoService.createBuildingInfo(buildingInfo);
