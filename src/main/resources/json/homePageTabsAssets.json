@@ -1,17 +1,23 @@
 {
   "utilityTab":
   [
-  {
-    "tabname":"GATE",
-    "url":"assets/images/gate.png"
-  },
-  {
-    "tabname":"MOTOR",
-    "url":"assets/images/motor.png"
-  },
-  {
-    "tabname":"AIR CONDITIONER",
-    "url":"assets/images/ac-1.png"
-  }
+	  {
+	    "tabname":"Gate Lock",
+	    "url":"assets/images/gate.jpeg",
+	    "deviceCode":"GL",
+	    "tabState":false
+	  },
+	  {
+	    "tabname":"Motor",
+	    "url":"assets/images/motor.png",
+	    "deviceCode":"MR",
+	    "tabState":false
+	  },
+	  {
+	    "tabname":"AC",
+	    "url":"assets/images/ac-1.png",
+	    "deviceCode":"AC",
+	    "tabState":false
+	  }
   ]
 }

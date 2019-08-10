@@ -18,4 +18,6 @@ import lombok.extern.slf4j.Slf4j;
 public class UtilityTab {
 	private String tabname;
     private String url;
+    private String deviceCode;
+    private Boolean tabState;
 }

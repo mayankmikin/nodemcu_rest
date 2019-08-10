@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.data.annotation.CreatedDate;
@@ -56,8 +57,10 @@ public class Device implements Serializable {
 		
 		private String externalIp;
 		
-		private Set<String> ports= new HashSet<String>();
+		private Set<Map<String,Integer>> ports= new HashSet<Map<String,Integer>>();
 	
+		private String deviceType;
+		
 		private  boolean isOccupied=false;
 
 }
