@@ -41,7 +41,7 @@ import lombok.ToString;
 @Setter
 @ToString
 @NoArgsConstructor
-@JsonIgnoreProperties({"contacts"})
+@JsonIgnoreProperties({"contacts","errors"})
 public class User implements Serializable {
 	
 	@Id
