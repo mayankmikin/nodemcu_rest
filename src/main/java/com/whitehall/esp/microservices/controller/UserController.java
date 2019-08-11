@@ -311,7 +311,7 @@ public class UserController extends GenericController
 		//
 		List<Role> roles = new ArrayList<Role>();
 
-		if (!userModel.getRoles().isEmpty()) {
+		if (userModel.getRoles()!=null && !userModel.getRoles().isEmpty()) {
 			userModel.getRoles().forEach(rol -> {
 				roles.add(roleService.findByRoleName(rol.getRoleName()).block());
 			});

@@ -157,4 +157,7 @@ public class User implements Serializable {
 		}
 		return this.permissions;
 	}
+	
+//	private String image_url;
+	
 }
