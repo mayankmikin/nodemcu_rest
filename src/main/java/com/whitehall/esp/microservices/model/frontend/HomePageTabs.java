@@ -20,5 +20,5 @@ import lombok.extern.slf4j.Slf4j;
 public class HomePageTabs 
 {
 	private List<UtilityTab> utilityTab= new ArrayList<UtilityTab>();
-	
+	private Integer defaultTabCount;
 }
