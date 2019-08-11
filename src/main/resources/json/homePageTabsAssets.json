@@ -19,5 +19,6 @@
 	    "deviceCode":"AC",
 	    "tabState":false
 	  }
-  ]
+  ],
+  "defaultTabCount":4
 }
