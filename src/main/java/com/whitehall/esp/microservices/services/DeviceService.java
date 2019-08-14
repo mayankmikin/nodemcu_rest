@@ -52,7 +52,7 @@ public class DeviceService {
 	    		exists=true;
 	    		device.setLocalIp(Device.getLocalIp());
 	    		device.setExternalIp(Device.getExternalIp());
-	    		device.setUserDefinedName(Device.getUserDefinedName());
+	    		//device.setUserDefinedName(Device.getUserDefinedName());
 	    		log.info("updating existing device : {}",device);
 	    		
 			}
