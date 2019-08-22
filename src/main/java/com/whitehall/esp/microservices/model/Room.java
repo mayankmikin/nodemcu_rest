@@ -37,4 +37,6 @@ public class Room implements Serializable{
 	  private String roomName;
 	  
 	  private Set<Device> devices = new HashSet<Device>();
+	  
+	  Boolean status=false;
 }

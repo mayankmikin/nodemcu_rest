@@ -58,6 +58,8 @@ public class Device implements Serializable {
 		private String externalIp;
 		
 		private Set<Map<String,Boolean>> ports= new HashSet<Map<String,Boolean>>();
+		
+		private Set<MultiPort> multi_ports=new HashSet<MultiPort>();
 	
 		private String deviceType;
 		
