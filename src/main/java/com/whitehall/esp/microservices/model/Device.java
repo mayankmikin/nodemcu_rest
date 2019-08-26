@@ -43,10 +43,10 @@ public class Device implements Serializable {
 		private String serialId;
 		
 		@CreatedDate
-		private Date createdAt;
+		private String createdAt;
 
 		@LastModifiedDate
-		private Date updatedAt;
+		private String updatedAt;
 	
 		//@DBRef(db="account", lazy = true) 
 	  	private Account account;

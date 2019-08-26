@@ -23,6 +23,7 @@ import com.whitehall.esp.microservices.model.frontend.MoveDeviceIntoRoom;
 import com.whitehall.esp.microservices.services.AccountService;
 import com.whitehall.esp.microservices.services.BuildingInfoService;
 import com.whitehall.esp.microservices.services.DeviceService;
+import com.whitehall.esp.microservices.utils.JsonUtils;
 
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
@@ -42,6 +43,9 @@ public class BuildingInfoController
 	
 	@Autowired
 	private AccountService accountService;
+	
+	@Autowired
+	private JsonUtils mapper;
 	
 	@PostMapping("/")
 	public Mono<BuildingInfo> saveBuildingInfo(@RequestBody BuildingInfo buildingInfo) throws AccountNotFoundException 
@@ -63,6 +67,25 @@ public class BuildingInfoController
 	public Flux<BuildingInfo> getAllBuildingInfo() 
 	{
 		return buildingInfoService.findAll();
+	}
+	
+	@PatchMapping("/{buildingInfoId}")
+	public Mono<BuildingInfo> editBuildingInfo(@RequestBody BuildingInfo buildingInfo, @PathVariable String buildingInfoId) throws AccountNotFoundException 
+	{
+		log.info("editBuildingInfo ");
+		log.info(mapper.print(buildingInfo));
+		mapper.print(buildingInfo);
+		Mono<BuildingInfo> existingBuildinInfo=buildingInfoService.findById(buildingInfoId);
+		if(null==existingBuildinInfo)
+		{
+			throw new BuildingInfoNotFoundException("Building with Id"+buildingInfoId+" not found");
+		}
+		Mono<Account> acc=accountService.findByAccountName(buildingInfo.getAccount().getAccountName());
+		if(null==acc)
+		{
+			throw new AccountNotFoundException("Account Not Found with account Name: "+buildingInfo.getAccount().getAccountName());
+		}
+		return buildingInfoService.createBuildingInfo(buildingInfo);
 	}
 	
 	@GetMapping("/{id}")

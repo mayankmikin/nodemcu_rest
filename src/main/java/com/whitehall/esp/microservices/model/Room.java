@@ -1,6 +1,7 @@
 package com.whitehall.esp.microservices.model;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -37,6 +38,6 @@ public class Room implements Serializable{
 	  private String roomName;
 	  
 	  private Set<Device> devices = new HashSet<Device>();
-	  
-	  Boolean status=false;
+	  private HashMap<String, String> roomConfigs=new HashMap<String, String>();
+	  private Boolean status=false;
 }

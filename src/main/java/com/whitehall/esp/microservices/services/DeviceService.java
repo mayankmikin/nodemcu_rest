@@ -1,12 +1,14 @@
 package com.whitehall.esp.microservices.services;
 
+import java.time.LocalDateTime;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.whitehall.esp.microservices.exceptions.DeviceAlreadyAddedInAnotherAccount;
+import com.whitehall.esp.microservices.exceptions.DeviceNotFoundException;
 import com.whitehall.esp.microservices.exceptions.EntityNotFoundException;
 import com.whitehall.esp.microservices.model.Account;
 import com.whitehall.esp.microservices.model.Device;
@@ -16,7 +18,6 @@ import com.whitehall.esp.microservices.utils.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
 
 @Service
 @Slf4j
@@ -52,6 +53,7 @@ public class DeviceService {
 	    		exists=true;
 	    		device.setLocalIp(Device.getLocalIp());
 	    		device.setExternalIp(Device.getExternalIp());
+	    		device.setCreatedAt(jsonUtils.getCurrentDate());
 	    		//device.setUserDefinedName(Device.getUserDefinedName());
 	    		log.info("updating existing device : {}",device);
 	    		
@@ -88,15 +90,17 @@ public class DeviceService {
 
 		public Mono<Device> changeAccountOfaDevice(String serialId, String accountId)throws EntityNotFoundException {
 			 	Device device = repository.findBySerialId(serialId).block();
+			 	Account accountTomove=accountService.getAccount(accountId).block();
 		        if (device == null) {
-		            throw new EntityNotFoundException(Device.class, "serialId", serialId.toString());
+		            //throw new EntityNotFoundException(Device.class, "serialId", serialId.toString());
+		        	throw new DeviceNotFoundException("Device Not Found "+serialId.toString());
 		        }
 		        else
 		        {
-		        	if(device.getAccount().getAccountName().equals(whitehallAccountNameOnServer))
+		        	if(device.getAccount().getAccountName().equals(whitehallAccountNameOnServer)||accountTomove.getAccountName().equalsIgnoreCase(whitehallAccountNameOnServer))
 		        	{
-		        		Account account=accountService.getAccount(accountId).block();
-		        			device.setAccount(account);
+		        		//Account account=accountService.getAccount(accountId).block();
+		        			device.setAccount(accountTomove);
 			        
 		        	}
 		        	else if(device.getAccount().getAccountId().equalsIgnoreCase(accountId))
@@ -115,7 +119,12 @@ public class DeviceService {
 			Boolean isDeviceReady=false;
 		 	Device device = repository.findBySerialId(serialId).block();
 	        if (device == null) {
-	            throw new EntityNotFoundException(Device.class, "serialId", serialId.toString());
+	           // throw new EntityNotFoundException(Device.class, "serialId", serialId.toString());
+	        	//return Mono.just(jsonUtils.setErrorData(isDeviceReady.toString(), "Device Not Found "+serialId.toString()));
+	        	throw new DeviceNotFoundException("Device Not Found "+serialId.toString());
+	        	
+	        	
+	        	
 	        }
 	        else
 	        {
@@ -138,6 +147,8 @@ public class DeviceService {
 	        }
 	        device.setUserDefinedName(Device.getUserDefinedName());
 	        device.setOccupied(Device.isOccupied());
+	       
+	        device.setUpdatedAt(jsonUtils.getCurrentDate());
 		return repository.save(device);
 	}
 		

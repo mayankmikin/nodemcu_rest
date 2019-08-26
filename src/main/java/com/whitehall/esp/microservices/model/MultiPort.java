@@ -18,7 +18,7 @@ import lombok.Setter;
 public class MultiPort implements Serializable {
 	 private static final long serialVersionUID = 820095909012313226L;
 		    private String portName;
-		    private String value;
+		    private Integer value;
 		    private String dt;
 		    private String range;
 		    private String name;
@@ -29,9 +29,9 @@ public class MultiPort implements Serializable {
 		    public void setPortName(String value) { this.portName = value; }
 
 		    @JsonProperty("value")
-		    public String getValue() { return value; }
+		    public Integer getValue() { return value; }
 		    @JsonProperty("value")
-		    public void setValue(String value) { this.value = value; }
+		    public void setValue(Integer value) { this.value = value; }
 
 		    @JsonProperty("DT")
 		    public String getDt() { return dt; }
