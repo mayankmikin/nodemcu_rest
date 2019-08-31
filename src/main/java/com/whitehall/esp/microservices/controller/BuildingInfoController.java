@@ -1,6 +1,9 @@
 package com.whitehall.esp.microservices.controller;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.UUID;
 
 import javax.security.auth.login.AccountNotFoundException;
 
@@ -51,10 +54,18 @@ public class BuildingInfoController
 	public Mono<BuildingInfo> saveBuildingInfo(@RequestBody BuildingInfo buildingInfo) throws AccountNotFoundException 
 	{
 		
-		Mono<Account> acc=accountService.findByAccountName(buildingInfo.getAccount().getAccountName());
+		Account acc=accountService.findByAccountName(buildingInfo.getAccount().getAccountName()).block();
+		BuildingInfo alreadyExisting=buildingInfoService.findByAccountAccountName(acc.getAccountName()).block();
+		if(null!=alreadyExisting)
+		{
+			buildingInfo.setAccount(acc);
+			alreadyExisting=getAllBuildingParamsRight(buildingInfo);
+			return buildingInfoService.createBuildingInfo(buildingInfo);
+		}
 		if(null!=acc)
 		{
-			buildingInfo.setAccount(acc.block());
+			buildingInfo.setAccount(acc);
+			buildingInfo=getAllBuildingParamsRight(buildingInfo);
 		}
 		else
 		{
@@ -63,6 +74,28 @@ public class BuildingInfoController
 		return buildingInfoService.createBuildingInfo(buildingInfo);
 	}
 	
+	private BuildingInfo getAllBuildingParamsRight(BuildingInfo buildingInfo) {
+		BuildingInfo b= new BuildingInfo();
+		//set account
+		b.setAccount(buildingInfo.getAccount());
+		// set houses
+		buildingInfo.getHouses().forEach((h)->{
+			h.setHouseId(UUID.randomUUID().toString());
+			h.getFloor().forEach((f)->{
+				f.setFloorId(UUID.randomUUID().toString());
+				f.getRooms().forEach((r)->{
+					r.setRoomId(UUID.randomUUID().toString());
+					r.setRoomConfigs(new HashMap<String, String>());
+					r.setStatus(false);
+					r.setDevices(new HashSet<Device>());
+					
+				});
+			});
+		});
+		b.setHouses(buildingInfo.getHouses());
+		return b;
+	}
+
 	@GetMapping("/")
 	public Flux<BuildingInfo> getAllBuildingInfo() 
 	{
