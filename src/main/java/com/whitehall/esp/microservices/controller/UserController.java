@@ -701,5 +701,16 @@ public class UserController extends GenericController
 	public void ifttChekc(String TextField,int NumberField) {
 		log.info("ifttChekc: NumberField={},TextField={}", NumberField,TextField);
 	}
+	
+	@GetMapping("/firstTimeVisited/{val}")
+	public Mono<User> firstTimeVisited(@PathVariable Boolean val) {
+		User user = userService.findByEmail(getEmailFromToken()).block();
+		user.setFirst_visited(val);
+		if(null==val)
+		{
+			throw new RuntimeException("Invalid Arguments in url");
+		}
+		return userService.updateUser(user);
+	}
 
 }
