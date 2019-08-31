@@ -58,14 +58,15 @@ public class BuildingInfoController
 		BuildingInfo alreadyExisting=buildingInfoService.findByAccountAccountName(acc.getAccountName()).block();
 		if(null!=alreadyExisting)
 		{
+			log.info("building Info already existsing for user: {}",acc.getAccountName());
 			buildingInfo.setAccount(acc);
-			alreadyExisting=getAllBuildingParamsRight(buildingInfo);
+			alreadyExisting=getAllBuildingParamsRight(alreadyExisting,buildingInfo);
 			return buildingInfoService.createBuildingInfo(alreadyExisting);
 		}
 		if(null!=acc)
 		{
 			buildingInfo.setAccount(acc);
-			buildingInfo=getAllBuildingParamsRight(buildingInfo);
+			buildingInfo=getAllBuildingParamsRight(new BuildingInfo(),buildingInfo);
 		}
 		else
 		{
@@ -74,9 +75,9 @@ public class BuildingInfoController
 		return buildingInfoService.createBuildingInfo(buildingInfo);
 	}
 	
-	private BuildingInfo getAllBuildingParamsRight(BuildingInfo buildingInfo) {
-		BuildingInfo b= new BuildingInfo();
+	private BuildingInfo getAllBuildingParamsRight(BuildingInfo b,BuildingInfo buildingInfo) {
 		//set account
+		
 		b.setAccount(buildingInfo.getAccount());
 		// set houses
 		buildingInfo.getHouses().forEach((h)->{
