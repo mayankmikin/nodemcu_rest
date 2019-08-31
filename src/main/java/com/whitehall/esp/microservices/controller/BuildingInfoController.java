@@ -60,7 +60,7 @@ public class BuildingInfoController
 		{
 			buildingInfo.setAccount(acc);
 			alreadyExisting=getAllBuildingParamsRight(buildingInfo);
-			return buildingInfoService.createBuildingInfo(buildingInfo);
+			return buildingInfoService.createBuildingInfo(alreadyExisting);
 		}
 		if(null!=acc)
 		{
