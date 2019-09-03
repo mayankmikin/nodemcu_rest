@@ -47,6 +47,7 @@ import com.whitehall.esp.microservices.model.NotificationType;
 import com.whitehall.esp.microservices.model.Notifications;
 import com.whitehall.esp.microservices.model.Role;
 import com.whitehall.esp.microservices.model.User;
+import com.whitehall.esp.microservices.model.googleSignIn.UserDetails;
 import com.whitehall.esp.microservices.services.AccountService;
 import com.whitehall.esp.microservices.services.RolesService;
 import com.whitehall.esp.microservices.services.UserService;
@@ -711,6 +712,56 @@ public class UserController extends GenericController
 			throw new RuntimeException("Invalid Arguments in url");
 		}
 		return userService.updateUser(user);
+	}
+	
+
+	@PostMapping("/googleSignIn")
+	public ResponseEntity<JWTTokenPayload> authenticate(@RequestBody User userModel)
+			throws JsonProcessingException,
+			AddressException, MessagingException, IOException, RoleInfoNotFoundException, EntityNotFoundException{
+	
+		log.info("googleSignIn :{}",userModel);
+		
+    	if(userService.existsByEmailId(userModel.getEmail()).block())
+		{
+    		log.info("googleSignIn user found  :{}",userModel);
+    		return new ResponseEntity<JWTTokenPayload>(
+    				new JWTTokenPayload(userService.signin(userModel.getEmail(), userModel.getEmail())), HttpStatus.OK);
+    		
+		}
+    	log.info("googleSignIn flow will now create a new user :{}",userModel);
+    	List<Role> roles = new ArrayList<Role>();
+		if (userModel.getRoles()!=null && !userModel.getRoles().isEmpty()) {
+			userModel.getRoles().forEach(rol -> {
+				roles.add(roleService.findByRoleName(rol.getRoleName()).block());
+			});
+
+		} else {
+			roles.add(roleService.findByRoleName("ROLE_USER_VIEW").block());
+		}
+		
+
+//    	
+//    	if(userService.existsByPhone(userModel.getPhone()).block())
+//		{
+//			throw new UserAlreadyExistException("User already exists with this phone Id: "+userModel.getPhone());
+//		}
+		
+	
+		Account account = new Account();
+		account.setAccountName(userModel.getEmail());
+		Mono<Account> createdAccount = accountService.createAccount(account);
+		account = createdAccount.block();
+		userModel.setAccount(account);	
+		userModel.setRoles(roles);
+		userModel.setIsAccountOwner(true);
+		userModel.setIsactive(true);
+		userModel.setPermissions(userModel.setPermissionsFromFile());
+		log.info("account details");
+			User user=userService.createUser(userModel).block();
+		
+		return new ResponseEntity<JWTTokenPayload>(
+				new JWTTokenPayload(userService.signin(user.getEmail(), user.getEmail())), HttpStatus.OK);
 	}
 
 }

@@ -36,7 +36,8 @@ public class WebSecurityConfig  extends WebSecurityConfigurerAdapter {
 	    http.authorizeRequests()//
 	        .antMatchers("/api/v1/user/authenticate").permitAll()//
 	        .antMatchers("/api/v1/user/register").permitAll()//	
-	        .antMatchers("/api/v1/user/invite/register").permitAll()//	
+	        .antMatchers("/api/v1/user/invite/register").permitAll()//
+	        .antMatchers("/api/v1/user/googleSignIn").permitAll()//
 	        .antMatchers("/api/v1/user/sendemail/**").permitAll()//
 	        .antMatchers("/api/v1/user/verify/**").permitAll()//
 	        .antMatchers("/api/v1/user/getRoles").permitAll()//
